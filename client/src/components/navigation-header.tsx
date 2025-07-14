@@ -46,7 +46,7 @@ export default function NavigationHeader({ currentRole }: NavigationHeaderProps)
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center">
+            <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => setLocation("/")}>
               <Stethoscope className="text-spartan-green text-2xl mr-3" />
               <h1 className="text-xl font-bold text-gray-900">SuturLearn</h1>
             </div>
