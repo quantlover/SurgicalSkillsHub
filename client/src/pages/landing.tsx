@@ -1,8 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Stethoscope, Video, Users, BarChart3, Shield, Award } from "lucide-react";
+import { Stethoscope, Video, Users, BarChart3, Shield, Award, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
 
 export default function Landing() {
+  const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+
+  const handleLogout = () => {
+    window.location.href = "/api/logout";
+  };
+
+  const handleRoleNavigation = (role: string) => {
+    setLocation(`/${role}`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -13,12 +26,29 @@ export default function Landing() {
               <Stethoscope className="text-spartan-green text-2xl mr-3" />
               <h1 className="text-xl font-bold text-gray-900">SuturLearn</h1>
             </div>
-            <Button 
-              onClick={() => window.location.href = '/api/login'}
-              className="bg-spartan-green hover:bg-deep-green text-white"
-            >
-              Sign In
-            </Button>
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-gray-600">
+                  Welcome, {user?.firstName || user?.email || "User"}
+                </span>
+                <Button 
+                  onClick={handleLogout}
+                  variant="outline"
+                  size="sm"
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <Button 
+                onClick={() => window.location.href = '/api/login'}
+                className="bg-spartan-green hover:bg-deep-green text-white"
+              >
+                Sign In
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -33,13 +63,49 @@ export default function Landing() {
             A comprehensive medical education platform designed to enhance suturing proficiency through 
             interactive video learning, expert feedback, and progress tracking.
           </p>
-          <Button 
-            onClick={() => window.location.href = '/api/login'}
-            size="lg"
-            className="bg-white text-spartan-green hover:bg-gray-100"
-          >
-            Get Started
-          </Button>
+          {isAuthenticated ? (
+            <div className="space-y-4">
+              <p className="text-lg">Choose your role to get started:</p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                <Button 
+                  onClick={() => handleRoleNavigation('learner')}
+                  size="lg"
+                  className="bg-white text-spartan-green hover:bg-gray-100"
+                >
+                  Learner
+                </Button>
+                <Button 
+                  onClick={() => handleRoleNavigation('evaluator')}
+                  size="lg"
+                  className="bg-white text-spartan-green hover:bg-gray-100"
+                >
+                  Evaluator
+                </Button>
+                <Button 
+                  onClick={() => handleRoleNavigation('researcher')}
+                  size="lg"
+                  className="bg-white text-spartan-green hover:bg-gray-100"
+                >
+                  Researcher
+                </Button>
+                <Button 
+                  onClick={() => handleRoleNavigation('admin')}
+                  size="lg"
+                  className="bg-white text-spartan-green hover:bg-gray-100"
+                >
+                  Admin
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button 
+              onClick={() => window.location.href = '/api/login'}
+              size="lg"
+              className="bg-white text-spartan-green hover:bg-gray-100"
+            >
+              Get Started
+            </Button>
+          )}
         </div>
       </section>
 
@@ -129,13 +195,49 @@ export default function Landing() {
           <p className="text-xl text-gray-600 mb-8">
             Join thousands of medical professionals improving their technique with SuturLearn
           </p>
-          <Button 
-            onClick={() => window.location.href = '/api/login'}
-            size="lg"
-            className="bg-spartan-green hover:bg-deep-green text-white"
-          >
-            Start Learning Today
-          </Button>
+          {isAuthenticated ? (
+            <div className="space-y-4">
+              <p className="text-lg text-gray-700">Access your dashboard:</p>
+              <div className="flex flex-wrap justify-center gap-4">
+                <Button 
+                  onClick={() => handleRoleNavigation('learner')}
+                  size="lg"
+                  className="bg-spartan-green hover:bg-deep-green text-white"
+                >
+                  Learner Dashboard
+                </Button>
+                <Button 
+                  onClick={() => handleRoleNavigation('evaluator')}
+                  size="lg"
+                  className="bg-spartan-green hover:bg-deep-green text-white"
+                >
+                  Evaluator Dashboard
+                </Button>
+                <Button 
+                  onClick={() => handleRoleNavigation('researcher')}
+                  size="lg"
+                  className="bg-spartan-green hover:bg-deep-green text-white"
+                >
+                  Researcher Dashboard
+                </Button>
+                <Button 
+                  onClick={() => handleRoleNavigation('admin')}
+                  size="lg"
+                  className="bg-spartan-green hover:bg-deep-green text-white"
+                >
+                  Admin Dashboard
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button 
+              onClick={() => window.location.href = '/api/login'}
+              size="lg"
+              className="bg-spartan-green hover:bg-deep-green text-white"
+            >
+              Start Learning Today
+            </Button>
+          )}
         </div>
       </section>
 

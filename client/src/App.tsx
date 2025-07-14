@@ -20,7 +20,7 @@ function Router() {
         <Route path="/" component={Landing} />
       ) : (
         <>
-          <Route path="/" component={LearnerDashboard} />
+          <Route path="/" component={Landing} />
           <Route path="/learner" component={LearnerDashboard} />
           <Route path="/evaluator" component={EvaluatorDashboard} />
           <Route path="/researcher" component={ResearcherDashboard} />
