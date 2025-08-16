@@ -21,6 +21,22 @@ export function useFirebaseAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    // Check if Firebase is configured properly
+    const isFirebaseConfigured = 
+      import.meta.env.VITE_FIREBASE_API_KEY && 
+      import.meta.env.VITE_FIREBASE_PROJECT_ID && 
+      import.meta.env.VITE_FIREBASE_APP_ID;
+
+    if (!isFirebaseConfigured) {
+      // Demo mode - no Firebase connection
+      console.log('Firebase not configured, running in demo mode');
+      setIsLoading(false);
+      setUser(null);
+      setUserProfile(null);
+      setIsAuthenticated(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChange(async (firebaseUser) => {
       setIsLoading(true);
       

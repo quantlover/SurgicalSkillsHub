@@ -16,16 +16,8 @@ export default function Landing() {
     } catch (error) {
       console.error('Login failed:', error);
       
-      // Development fallback: Allow user to continue with demo mode
-      const useDemoMode = confirm(
-        'Firebase authentication failed. Would you like to continue in demo mode? (Click OK for demo mode, Cancel to retry)'
-      );
-      
-      if (useDemoMode) {
-        // Simulate successful authentication for development
-        console.log('Using demo mode');
-        setLocation('/learner');
-      }
+      // Show user-friendly error message and suggest demo mode
+      alert(`Authentication is not available: ${(error as Error).message}\n\nPlease use the demo buttons below to try the platform.`);
     }
   };
 

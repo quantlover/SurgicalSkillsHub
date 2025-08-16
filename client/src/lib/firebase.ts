@@ -37,6 +37,13 @@ googleProvider.addScope('profile');
 // Auth functions
 export const signInWithGoogle = async () => {
   try {
+    // Check if Firebase is properly configured
+    if (!import.meta.env.VITE_FIREBASE_API_KEY || 
+        !import.meta.env.VITE_FIREBASE_PROJECT_ID || 
+        !import.meta.env.VITE_FIREBASE_APP_ID) {
+      throw new Error('Firebase authentication is not configured. Please set up Firebase credentials or use demo mode.');
+    }
+    
     console.log('Attempting Google sign-in...');
     return await signInWithRedirect(auth, googleProvider);
   } catch (error) {
@@ -44,14 +51,14 @@ export const signInWithGoogle = async () => {
     
     // Check if the error is due to domain configuration
     if ((error as any).code === 'auth/unauthorized-domain') {
-      alert('Authentication Error: This domain is not authorized. Please configure this domain in your Firebase console under Authentication > Settings > Authorized domains.');
+      throw new Error('This domain is not authorized for Firebase authentication. Please configure this domain in your Firebase console under Authentication > Settings > Authorized domains.');
     } else if ((error as any).code === 'auth/popup-blocked') {
-      alert('Popup blocked. Please allow popups for this site and try again.');
+      throw new Error('Popup blocked. Please allow popups for this site and try again.');
+    } else if ((error as any).message?.includes('Firebase authentication is not configured')) {
+      throw new Error('Firebase authentication is not configured. Please set up Firebase credentials.');
     } else {
-      alert('Authentication failed. Please check your internet connection and try again.');
+      throw new Error(`Authentication failed: ${(error as any).message || 'Unknown error'}`);
     }
-    
-    throw error;
   }
 };
 
