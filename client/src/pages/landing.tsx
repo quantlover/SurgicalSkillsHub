@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Stethoscope, Video, Users, BarChart3, Shield, Award, LogOut } from "lucide-react";
-import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { useDemoAuth } from "@/hooks/useDemoAuth";
 import { signInWithGoogle, signOut } from "@/lib/firebase";
 import { useLocation } from "wouter";
 
 export default function Landing() {
-  const { userProfile, isAuthenticated } = useFirebaseAuth();
+  const { userProfile, isAuthenticated } = useDemoAuth();
   const [, setLocation] = useLocation();
 
   const handleLogin = async () => {

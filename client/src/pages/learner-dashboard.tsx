@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { useDemoAuth } from "@/hooks/useDemoAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import NavigationHeader from "@/components/navigation-header";
@@ -15,7 +15,7 @@ import { Play, Upload, MessageSquare, TrendingUp, Star, Clock, Tag } from "lucid
 
 export default function LearnerDashboard() {
   const { toast } = useToast();
-  const { isAuthenticated, isLoading } = useFirebaseAuth();
+  const { isAuthenticated, isLoading } = useDemoAuth();
   const [activeTab, setActiveTab] = useState("video-library");
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { useDemoAuth } from "@/hooks/useDemoAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import NavigationHeader from "@/components/navigation-header";
@@ -24,7 +24,7 @@ import {
 
 export default function ResearcherDashboard() {
   const { toast } = useToast();
-  const { isAuthenticated, isLoading } = useFirebaseAuth();
+  const { isAuthenticated, isLoading } = useDemoAuth();
   const [complianceSettings, setComplianceSettings] = useState({
     dataAnonymization: true,
     hipaaCompliance: true,

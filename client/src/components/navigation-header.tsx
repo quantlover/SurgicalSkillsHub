@@ -1,4 +1,4 @@
-import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { useDemoAuth } from "@/hooks/useDemoAuth";
 import { signOut } from "@/lib/firebase";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ interface NavigationHeaderProps {
 }
 
 export default function NavigationHeader({ currentRole }: NavigationHeaderProps) {
-  const { userProfile, isAuthenticated } = useFirebaseAuth();
+  const { userProfile, isAuthenticated } = useDemoAuth();
   const [location, setLocation] = useLocation();
 
   const handleRoleChange = (role: string) => {
