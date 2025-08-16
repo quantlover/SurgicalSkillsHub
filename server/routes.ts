@@ -5,6 +5,8 @@ import path from "path";
 import fs from "fs";
 import { speechToText } from "./services/speechToText";
 import { processVideo } from "./services/videoProcessor";
+import { VideoScraperService } from "./services/video-scraper.js";
+import { VideoProcessorService } from "./services/video-processor.js";
 
 // Configure multer for file uploads
 const upload = multer({
@@ -22,6 +24,10 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize video services
+  const videoScraper = new VideoScraperService();
+  const videoProcessor = new VideoProcessorService();
+  
   // Simple auth middleware for development
   const isAuthenticated = (req: any, res: any, next: any) => {
     req.user = { uid: 'dev-user-123' };
@@ -301,6 +307,112 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     res.sendFile(path.resolve(filePath));
+  });
+
+  // Video scraping endpoints
+  app.post('/api/scrape/youtube', isAuthenticated, async (req, res) => {
+    try {
+      const { channelId, maxVideos = 10 } = req.body;
+      
+      if (!channelId) {
+        return res.status(400).json({ error: 'Channel ID is required' });
+      }
+
+      const scrapedVideos = await videoScraper.scrapeYouTubeChannel(channelId, maxVideos);
+      const processedVideos = await videoProcessor.processVideoBatch(scrapedVideos);
+      
+      res.json({
+        success: true,
+        count: processedVideos.length,
+        videos: processedVideos
+      });
+    } catch (error) {
+      console.error('YouTube scraping error:', error);
+      res.status(500).json({ error: 'Failed to scrape YouTube channel' });
+    }
+  });
+
+  app.post('/api/scrape/surghub', isAuthenticated, async (req, res) => {
+    try {
+      const { maxVideos = 10 } = req.body;
+      
+      const scrapedVideos = await videoScraper.scrapeSURGhub(maxVideos);
+      const processedVideos = await videoProcessor.processVideoBatch(scrapedVideos);
+      
+      res.json({
+        success: true,
+        count: processedVideos.length,
+        videos: processedVideos
+      });
+    } catch (error) {
+      console.error('SURGhub scraping error:', error);
+      res.status(500).json({ error: 'Failed to scrape SURGhub' });
+    }
+  });
+
+  app.post('/api/scrape/medtube', isAuthenticated, async (req, res) => {
+    try {
+      const { maxVideos = 10 } = req.body;
+      
+      const scrapedVideos = await videoScraper.scrapeMEDtube(maxVideos);
+      const processedVideos = await videoProcessor.processVideoBatch(scrapedVideos);
+      
+      res.json({
+        success: true,
+        count: processedVideos.length,
+        videos: processedVideos
+      });
+    } catch (error) {
+      console.error('MEDtube scraping error:', error);
+      res.status(500).json({ error: 'Failed to scrape MEDtube' });
+    }
+  });
+
+  app.post('/api/scrape/all', isAuthenticated, async (req, res) => {
+    try {
+      console.log('Starting comprehensive video scraping...');
+      
+      const scrapedVideos = await videoScraper.scrapeAllPlatforms();
+      const processedVideos = await videoProcessor.processVideoBatch(scrapedVideos);
+      
+      console.log(`Successfully scraped and processed ${processedVideos.length} videos`);
+      
+      res.json({
+        success: true,
+        count: processedVideos.length,
+        videos: processedVideos,
+        platforms: {
+          youtube: processedVideos.filter(v => v.platform === 'YouTube').length,
+          surghub: processedVideos.filter(v => v.platform === 'SURGhub').length,
+          medtube: processedVideos.filter(v => v.platform === 'MEDtube').length
+        }
+      });
+    } catch (error) {
+      console.error('Comprehensive scraping error:', error);
+      res.status(500).json({ error: 'Failed to scrape video platforms' });
+    }
+  });
+
+  app.get('/api/scrape/status', isAuthenticated, async (req, res) => {
+    try {
+      res.json({
+        success: true,
+        platforms: {
+          youtube: 'Available',
+          surghub: 'Available', 
+          medtube: 'Available'
+        },
+        supportedChannels: [
+          'Medical Creations',
+          'Armando Hasudungan',
+          'MedCram',
+          'Osmosis',
+          'The Suture Buddy'
+        ]
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get scraping status' });
+    }
   });
 
   const httpServer = createServer(app);
