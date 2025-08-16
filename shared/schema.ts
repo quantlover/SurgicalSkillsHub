@@ -181,6 +181,17 @@ export const learningRecords = pgTable('learning_records', {
   difficultyRating: integer('difficulty_rating'), // User's subjective difficulty rating 1-5
   satisfactionRating: integer('satisfaction_rating'), // User's satisfaction rating 1-5
   
+  // AI-powered assessments
+  aiSkillScore: real('ai_skill_score'), // AI-calculated skill proficiency 0-100
+  aiTechnicalScore: real('ai_technical_score'), // Technical execution score
+  aiSpeedScore: real('ai_speed_score'), // Speed and efficiency score
+  aiAccuracyScore: real('ai_accuracy_score'), // Accuracy and precision score
+  aiImprovementAreas: jsonb('ai_improvement_areas'), // Areas needing improvement
+  aiStrengths: jsonb('ai_strengths'), // Identified strengths
+  aiPersonalizedFeedback: text('ai_personalized_feedback'), // Generated feedback
+  aiRecommendedVideos: jsonb('ai_recommended_videos'), // AI video recommendations
+  aiLearningPathSuggestions: jsonb('ai_learning_path_suggestions'), // Path recommendations
+  
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 });

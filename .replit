@@ -36,4 +36,4 @@ args = "npm run dev"
 waitForPort = 5000
 
 [agent]
-integrations = ["firebase_barebones_javascript==1.0.0", "javascript_log_in_with_replit==1.0.0", "javascript_database==1.0.0", "javascript_openai==1.0.0"]
+integrations = ["firebase_barebones_javascript==1.0.0", "javascript_log_in_with_replit==1.0.0", "perplexity_v0==1.0.0", "javascript_openai==1.0.0", "javascript_database==1.0.0"]

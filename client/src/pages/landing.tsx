@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Stethoscope, Video, Users, BarChart3, Shield, Award, LogOut } from "lucide-react";
+import { Stethoscope, Video, Users, BarChart3, Shield, Award, LogOut, Brain, ArrowRight, CheckCircle, Link } from "lucide-react";
 import { useDemoAuth } from "@/hooks/useDemoAuth";
 import { signInWithGoogle, signOut } from "@/lib/firebase";
 import { useLocation } from "wouter";
@@ -145,6 +145,24 @@ export default function Landing() {
                     className="bg-white/10 text-white border-white hover:bg-white/20"
                   >
                     Video Scraper
+                  </Button>
+                  <Button 
+                    onClick={() => setLocation('/ai-skills')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white/10 text-white border-white hover:bg-white/20"
+                  >
+                    <Brain className="w-4 h-4 mr-2" />
+                    AI Skills
+                  </Button>
+                  <Button 
+                    onClick={() => setLocation('/analytics')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white/10 text-white border-white hover:bg-white/20"
+                  >
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    Analytics
                   </Button>
                 </div>
               </div>

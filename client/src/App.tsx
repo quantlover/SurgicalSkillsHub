@@ -13,6 +13,7 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import VideoScraperDemo from "@/pages/video-scraper-demo";
 import AdminVideoReview from "@/pages/admin-video-review";
 import VideoAnalyticsDashboard from "@/pages/video-analytics-dashboard";
+import AiSkillDashboard from "@/pages/ai-skill-dashboard";
 
 function Router() {
   const { isAuthenticated, isLoading } = useDemoAuth();
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/video-scraper" component={VideoScraperDemo} />
       <Route path="/admin/video-review" component={AdminVideoReview} />
       <Route path="/analytics" component={VideoAnalyticsDashboard} />
+      <Route path="/ai-skills" component={AiSkillDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
