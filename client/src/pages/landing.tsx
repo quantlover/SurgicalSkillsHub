@@ -120,7 +120,7 @@ export default function Landing() {
                 Get Started
               </Button>
               <div className="mt-4">
-                <p className="text-sm text-gray-300 mb-2">Or try the demo:</p>
+                <p className="text-sm text-gray-300 mb-2">Or try these demos:</p>
                 <div className="flex flex-wrap justify-center gap-2">
                   <Button 
                     onClick={() => setLocation('/learner')}
@@ -137,6 +137,14 @@ export default function Landing() {
                     className="bg-white/10 text-white border-white hover:bg-white/20"
                   >
                     Demo: Evaluator
+                  </Button>
+                  <Button 
+                    onClick={() => setLocation('/video-scraper')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white/10 text-white border-white hover:bg-white/20"
+                  >
+                    Video Scraper
                   </Button>
                 </div>
               </div>
