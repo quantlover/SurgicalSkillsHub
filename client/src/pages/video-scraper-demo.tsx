@@ -174,6 +174,98 @@ export default function VideoScraperDemo() {
     allPlatformsScrapeMutation.mutate();
   };
 
+  // Individual channel scraping mutation
+  const channelScrapeMutation = useMutation({
+    mutationFn: async (channelName: string) => {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const channelVideos = {
+        success: true,
+        count: 3,
+        videos: [
+          {
+            id: `channel-${channelName}-1`,
+            title: `${channelName}: Suturing Fundamentals`,
+            description: `Essential suturing techniques from ${channelName}`,
+            duration: 600,
+            platform: 'YouTube',
+            instructor: channelName
+          },
+          {
+            id: `channel-${channelName}-2`,
+            title: `${channelName}: Advanced Techniques`,
+            description: `Advanced surgical techniques from ${channelName}`,
+            duration: 900,
+            platform: 'YouTube',
+            instructor: channelName
+          },
+          {
+            id: `channel-${channelName}-3`,
+            title: `${channelName}: Clinical Applications`,
+            description: `Real-world applications from ${channelName}`,
+            duration: 720,
+            platform: 'YouTube',
+            instructor: channelName
+          }
+        ],
+        platforms: { youtube: 3, surghub: 0, medtube: 0 }
+      };
+
+      return channelVideos;
+    },
+    onSuccess: (data, channelName) => {
+      setLastScrapingResult(data);
+      toast({
+        title: "Channel Scraping Complete!",
+        description: `Successfully scraped ${data.count} videos from ${channelName}`,
+        variant: "default"
+      });
+    },
+    onError: (error: any, channelName) => {
+      toast({
+        title: "Channel Scraping Failed",
+        description: `Failed to scrape videos from ${channelName}`,
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleChannelScrape = (channelName: string) => {
+    setLastScrapingResult(null);
+    channelScrapeMutation.mutate(channelName);
+  };
+
+  const handleQuickLinkAction = (action: string) => {
+    switch (action) {
+      case 'video-library':
+        toast({
+          title: "Video Library",
+          description: "Redirecting to main video library...",
+          variant: "default"
+        });
+        // In a real app, this would navigate to the video library
+        break;
+      case 'surghub':
+        window.open('https://www.surghub.org', '_blank');
+        toast({
+          title: "External Link",
+          description: "Opening SURGhub in a new tab",
+          variant: "default"
+        });
+        break;
+      case 'admin-dashboard':
+        toast({
+          title: "Admin Dashboard",
+          description: "Redirecting to admin dashboard...",
+          variant: "default"
+        });
+        // In a real app, this would navigate to admin dashboard
+        break;
+      default:
+        break;
+    }
+  };
+
   // Preset YouTube channels for medical education
   const presetChannels = [
     { id: 'UCbx7vOmIKJJUrBWGHMSFsWA', name: 'Medical Creations' },
@@ -373,18 +465,35 @@ export default function VideoScraperDemo() {
               </CardContent>
             </Card>
 
-            {/* Supported Channels */}
+            {/* Featured Medical Channels */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm">Featured Medical Channels</CardTitle>
+                <CardDescription className="text-xs">
+                  Click to scrape videos from individual channels
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   {presetChannels.map((channel, index) => (
-                    <div key={index} className="flex items-center gap-2 text-sm">
-                      <Youtube className="h-3 w-3 text-blue-600" />
-                      <span>{channel.name}</span>
-                    </div>
+                    <Button
+                      key={index}
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start h-auto p-2"
+                      onClick={() => handleChannelScrape(channel.name)}
+                      disabled={channelScrapeMutation.isPending}
+                    >
+                      <div className="flex items-center gap-2 text-sm">
+                        <Youtube className="h-3 w-3 text-blue-600" />
+                        <span>{channel.name}</span>
+                        {channelScrapeMutation.isPending ? (
+                          <Clock className="h-3 w-3 animate-spin ml-auto" />
+                        ) : (
+                          <Download className="h-3 w-3 ml-auto opacity-0 group-hover:opacity-100" />
+                        )}
+                      </div>
+                    </Button>
                   ))}
                 </div>
                 <div className="mt-4 text-xs text-gray-500">
@@ -397,17 +506,35 @@ export default function VideoScraperDemo() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm">Quick Links</CardTitle>
+                <CardDescription className="text-xs">
+                  Navigate to related sections and external resources
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="outline" size="sm" className="w-full justify-start">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full justify-start"
+                  onClick={() => handleQuickLinkAction('video-library')}
+                >
                   <Play className="mr-2 h-4 w-4" />
                   View Video Library
                 </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full justify-start"
+                  onClick={() => handleQuickLinkAction('surghub')}
+                >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Visit SURGhub
                 </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full justify-start"
+                  onClick={() => handleQuickLinkAction('admin-dashboard')}
+                >
                   <Database className="mr-2 h-4 w-4" />
                   Admin Dashboard
                 </Button>
