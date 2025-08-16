@@ -59,44 +59,44 @@ export default function Landing() {
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-spartan-green to-deep-green text-white">
+      <section className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-6">
+          <h2 className="text-5xl font-bold mb-6 text-white drop-shadow-lg">
             Master Suturing Skills with Expert Guidance
           </h2>
-          <p className="text-xl mb-8 max-w-3xl mx-auto">
+          <p className="text-xl mb-8 max-w-3xl mx-auto text-gray-200 font-medium">
             A comprehensive medical education platform designed to enhance suturing proficiency through 
             interactive video learning, expert feedback, and progress tracking.
           </p>
           {isAuthenticated ? (
             <div className="space-y-4">
-              <p className="text-lg">Choose your role to get started:</p>
+              <p className="text-lg text-white font-medium">Choose your role to get started:</p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
                 <Button 
                   onClick={() => handleRoleNavigation('learner')}
                   size="lg"
-                  className="bg-white text-spartan-green hover:bg-gray-100"
+                  className="bg-white text-spartan-green hover:bg-gray-50 border-2 border-white shadow-lg font-semibold"
                 >
                   Learner
                 </Button>
                 <Button 
                   onClick={() => handleRoleNavigation('evaluator')}
                   size="lg"
-                  className="bg-white text-spartan-green hover:bg-gray-100"
+                  className="bg-white text-spartan-green hover:bg-gray-50 border-2 border-white shadow-lg font-semibold"
                 >
                   Evaluator
                 </Button>
                 <Button 
                   onClick={() => handleRoleNavigation('researcher')}
                   size="lg"
-                  className="bg-white text-spartan-green hover:bg-gray-100"
+                  className="bg-white text-spartan-green hover:bg-gray-50 border-2 border-white shadow-lg font-semibold"
                 >
                   Researcher
                 </Button>
                 <Button 
                   onClick={() => handleRoleNavigation('admin')}
                   size="lg"
-                  className="bg-white text-spartan-green hover:bg-gray-100"
+                  className="bg-white text-spartan-green hover:bg-gray-50 border-2 border-white shadow-lg font-semibold"
                 >
                   Admin
                 </Button>
@@ -106,7 +106,7 @@ export default function Landing() {
             <Button 
               onClick={handleLogin}
               size="lg"
-              className="bg-white text-spartan-green hover:bg-gray-100"
+              className="bg-spartan-green hover:bg-deep-green text-white px-8 py-3 font-semibold text-lg shadow-lg"
             >
               Get Started with Google
             </Button>
