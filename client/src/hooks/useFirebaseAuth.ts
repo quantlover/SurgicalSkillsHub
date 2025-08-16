@@ -28,37 +28,54 @@ export function useFirebaseAuth() {
         setUser(firebaseUser);
         setIsAuthenticated(true);
         
-        // Get or create user profile in Firestore
-        const userDocRef = doc(db, 'users', firebaseUser.uid);
-        const userDoc = await getDoc(userDocRef);
-        
-        let profile: UserProfile;
-        
-        if (userDoc.exists()) {
-          profile = userDoc.data() as UserProfile;
-          // Update last login
-          await setDoc(userDocRef, {
-            ...profile,
-            lastLogin: serverTimestamp()
-          }, { merge: true });
-        } else {
-          // Create new user profile
+        try {
+          // Get or create user profile in Firestore
+          const userDocRef = doc(db, 'users', firebaseUser.uid);
+          const userDoc = await getDoc(userDocRef);
+          
+          let profile: UserProfile;
+          
+          if (userDoc.exists()) {
+            profile = userDoc.data() as UserProfile;
+            // Update last login
+            await setDoc(userDocRef, {
+              ...profile,
+              lastLogin: serverTimestamp()
+            }, { merge: true });
+          } else {
+            // Create new user profile
+            const names = firebaseUser.displayName?.split(' ') || ['', ''];
+            profile = {
+              id: firebaseUser.uid,
+              email: firebaseUser.email || '',
+              firstName: names[0] || '',
+              lastName: names.slice(1).join(' ') || '',
+              profileImageUrl: firebaseUser.photoURL || undefined,
+              roles: ['learner'], // Default role
+              createdAt: serverTimestamp(),
+              lastLogin: serverTimestamp()
+            };
+            
+            await setDoc(userDocRef, profile);
+          }
+          
+          setUserProfile(profile);
+        } catch (error) {
+          console.warn('Firestore access failed, using basic profile:', error);
+          // Fallback profile for demo mode
           const names = firebaseUser.displayName?.split(' ') || ['', ''];
-          profile = {
+          const profile: UserProfile = {
             id: firebaseUser.uid,
             email: firebaseUser.email || '',
             firstName: names[0] || '',
             lastName: names.slice(1).join(' ') || '',
             profileImageUrl: firebaseUser.photoURL || undefined,
-            roles: ['learner'], // Default role
-            createdAt: serverTimestamp(),
-            lastLogin: serverTimestamp()
+            roles: ['learner'],
+            createdAt: new Date(),
+            lastLogin: new Date()
           };
-          
-          await setDoc(userDocRef, profile);
+          setUserProfile(profile);
         }
-        
-        setUserProfile(profile);
       } else {
         setUser(null);
         setUserProfile(null);
