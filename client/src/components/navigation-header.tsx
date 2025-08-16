@@ -11,7 +11,7 @@ interface NavigationHeaderProps {
 }
 
 export default function NavigationHeader({ currentRole }: NavigationHeaderProps) {
-  const { userProfile } = useFirebaseAuth();
+  const { userProfile, isAuthenticated } = useFirebaseAuth();
   const [location, setLocation] = useLocation();
 
   const handleRoleChange = (role: string) => {
@@ -72,23 +72,34 @@ export default function NavigationHeader({ currentRole }: NavigationHeaderProps)
             {/* User Profile */}
             <div className="flex items-center space-x-3">
               <Avatar className="w-8 h-8">
-                <AvatarImage src={userProfile?.profileImageUrl} alt={getUserDisplayName(userProfile)} />
+                <AvatarImage src={userProfile?.profileImageUrl} alt={getUserDisplayName(userProfile || { email: "demo@example.com" })} />
                 <AvatarFallback className="bg-gray-300 text-gray-600">
-                  {getUserInitials(userProfile)}
+                  {getUserInitials(userProfile || { email: "demo@example.com" })}
                 </AvatarFallback>
               </Avatar>
               <span className="text-sm font-medium text-gray-700 hidden sm:block">
-                {getUserDisplayName(userProfile)}
+                {isAuthenticated ? getUserDisplayName(userProfile) : "Demo User"}
               </span>
               
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLogout}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                <LogOut className="w-4 h-4" />
-              </Button>
+              {isAuthenticated ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setLocation("/")}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  Home
+                </Button>
+              )}
             </div>
           </div>
         </div>

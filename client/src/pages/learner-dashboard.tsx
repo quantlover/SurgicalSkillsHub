@@ -49,7 +49,7 @@ export default function LearnerDashboard() {
     retry: false,
   });
 
-  if (isLoading || !isAuthenticated) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -69,6 +69,13 @@ export default function LearnerDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {!isAuthenticated && (
+        <div className="bg-yellow-100 border-b border-yellow-200 px-4 py-2 text-center">
+          <p className="text-sm text-yellow-800">
+            <strong>Demo Mode:</strong> You're viewing a demonstration. <a href="/" className="underline">Return to homepage</a> to sign in for full access.
+          </p>
+        </div>
+      )}
       <NavigationHeader currentRole="learner" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
