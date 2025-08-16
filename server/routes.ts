@@ -66,11 +66,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     ]
   };
   
-  // Mount learning records routes
-  app.use('/api', createLearningRecordsRoutes(mockStorage as any));
-  
-  // Quick fix for individual records export endpoint
+  // Define individual records export endpoint FIRST (before other routes)
   app.get('/api/learning-records/export', async (req, res) => {
+    console.log('Export endpoint called');
+    res.setHeader('Content-Type', 'application/json');
     try {
       const sampleRecords = [
         {
@@ -159,12 +158,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       ];
       
-      res.json(sampleRecords);
+      console.log('Sending sample records:', sampleRecords.length, 'records');
+      return res.json(sampleRecords);
     } catch (error) {
       console.error('Error exporting learning records:', error);
-      res.status(500).json({ error: 'Failed to export learning records' });
+      return res.status(500).json({ error: 'Failed to export learning records' });
     }
   });
+  
+  // Mount other learning records routes AFTER the specific export route
+  app.use('/api', createLearningRecordsRoutes(mockStorage as any));
   
   // Simple auth middleware for development
   const isAuthenticated = (req: any, res: any, next: any) => {
