@@ -1,4 +1,5 @@
-import { useAuth } from "@/hooks/useAuth";
+import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { signOut } from "@/lib/firebase";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,15 +11,15 @@ interface NavigationHeaderProps {
 }
 
 export default function NavigationHeader({ currentRole }: NavigationHeaderProps) {
-  const { user } = useAuth();
+  const { userProfile } = useFirebaseAuth();
   const [location, setLocation] = useLocation();
 
   const handleRoleChange = (role: string) => {
     setLocation(`/${role}`);
   };
 
-  const handleLogout = () => {
-    window.location.href = "/api/logout";
+  const handleLogout = async () => {
+    await signOut();
   };
 
   const getUserInitials = (user: any) => {
@@ -71,13 +72,13 @@ export default function NavigationHeader({ currentRole }: NavigationHeaderProps)
             {/* User Profile */}
             <div className="flex items-center space-x-3">
               <Avatar className="w-8 h-8">
-                <AvatarImage src={user?.profileImageUrl} alt={getUserDisplayName(user)} />
+                <AvatarImage src={userProfile?.profileImageUrl} alt={getUserDisplayName(userProfile)} />
                 <AvatarFallback className="bg-gray-300 text-gray-600">
-                  {getUserInitials(user)}
+                  {getUserInitials(userProfile)}
                 </AvatarFallback>
               </Avatar>
               <span className="text-sm font-medium text-gray-700 hidden sm:block">
-                {getUserDisplayName(user)}
+                {getUserDisplayName(userProfile)}
               </span>
               
               <Button

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
+import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import NavigationHeader from "@/components/navigation-header";
@@ -13,7 +13,7 @@ import { Clock, Tag, User, Star, MessageSquare, History } from "lucide-react";
 
 export default function EvaluatorDashboard() {
   const { toast } = useToast();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useFirebaseAuth();
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
 
   // Redirect to login if not authenticated
@@ -25,7 +25,7 @@ export default function EvaluatorDashboard() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        window.location.href = "/";
       }, 500);
       return;
     }

@@ -17,10 +17,11 @@ SuturLearn is a comprehensive medical education platform designed to enhance sut
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js
 - **Language**: TypeScript with ES modules
-- **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: Replit Auth with OpenID Connect
-- **Session Management**: PostgreSQL-backed sessions with connect-pg-simple
+- **Database**: Firebase Firestore with comprehensive security rules
+- **Authentication**: Firebase Auth with Google OAuth
+- **Session Management**: Firebase Authentication token management
 - **File Upload**: Multer middleware for video/audio processing
+- **Security**: Zero-trust architecture with role-based access control
 
 ### Key Design Decisions
 1. **Monolithic Structure**: Single repository containing client, server, and shared code for simplified development and deployment
@@ -31,10 +32,10 @@ SuturLearn is a comprehensive medical education platform designed to enhance sut
 ## Key Components
 
 ### Authentication System
-- **Provider**: Replit Auth with OIDC integration
-- **Session Storage**: PostgreSQL-backed sessions with configurable TTL
-- **User Management**: Automatic user creation/updates with role assignment
-- **Security**: HTTPS-only cookies with CSRF protection
+- **Provider**: Firebase Auth with Google OAuth integration
+- **Session Storage**: Firebase Authentication tokens with automatic management
+- **User Management**: Automatic user profile creation in Firestore with role assignment
+- **Security**: Maximum security with Firebase Auth tokens, no unauthorized access allowed
 
 ### Video Management
 - **Upload**: Multer-based file upload with size and type validation (500MB limit)
@@ -55,19 +56,21 @@ SuturLearn is a comprehensive medical education platform designed to enhance sut
 
 ## Data Flow
 
-1. **User Authentication**: Replit Auth → Session Creation → Role Assignment
-2. **Video Upload**: File Upload → Processing → Database Storage → Metadata Extraction
+1. **User Authentication**: Google OAuth → Firebase Auth → Firestore Profile Creation → Role Assignment
+2. **Video Upload**: File Upload → Processing → Firestore Storage → Metadata Extraction
 3. **Feedback Loop**: Video Assignment → Evaluator Review → Rubric Completion → Learner Notification
 4. **Progress Tracking**: Activity Recording → Analytics Calculation → Dashboard Display
-5. **Data Export**: Query Aggregation → Format Conversion → Download Generation
+5. **Data Export**: Secure Query Aggregation → Format Conversion → Download Generation
+6. **Security Validation**: Every request validated against Firestore security rules
 
 ## External Dependencies
 
 ### Core Dependencies
-- **Database**: Neon PostgreSQL serverless database
-- **Authentication**: Replit Auth service
+- **Database**: Firebase Firestore with security rules
+- **Authentication**: Firebase Auth with Google OAuth
 - **AI Services**: OpenAI API for speech-to-text transcription
 - **File Processing**: Native Node.js file system operations
+- **Security**: Firebase security rules engine
 
 ### Development Dependencies
 - **Build Tool**: Vite for frontend bundling
@@ -83,10 +86,10 @@ SuturLearn is a comprehensive medical education platform designed to enhance sut
 3. **Database**: Drizzle migrations applied during deployment
 
 ### Environment Configuration
-- **DATABASE_URL**: PostgreSQL connection string (required)
-- **SESSION_SECRET**: Session encryption key (required)
+- **VITE_FIREBASE_API_KEY**: Firebase API key (required)
+- **VITE_FIREBASE_PROJECT_ID**: Firebase project ID (required)
+- **VITE_FIREBASE_APP_ID**: Firebase app ID (required)
 - **OPENAI_API_KEY**: OpenAI API access (optional, speech-to-text fallback)
-- **REPLIT_DOMAINS**: Allowed domains for OIDC (required)
 
 ### Runtime
 - **Development**: TSX for hot-reloading TypeScript execution
@@ -100,3 +103,4 @@ Preferred communication style: Simple, everyday language.
 
 Changelog:
 - July 06, 2025. Initial setup
+- August 16, 2025. Implemented maximum security with Firebase Auth and Firestore. Zero unauthorized access allowed, comprehensive role-based security rules, Google OAuth integration.

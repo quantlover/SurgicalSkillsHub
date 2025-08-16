@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the resource
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Helper function to check user roles
+    function hasRole(role) {
+      return isAuthenticated() && 
+             role in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.roles;
+    }
+    
+    // Helper function to check if user is admin or researcher
+    function isAdminOrResearcher() {
+      return hasRole('admin') || hasRole('researcher');
+    }
+    
+    // Helper function to check if user is evaluator
+    function isEvaluator() {
+      return hasRole('evaluator');
+    }
+    
+    // Users collection - highest security
+    match /users/{userId} {
+      // Users can only read/write their own profile
+      allow read, write: if isOwner(userId);
+      // Admins can read all user profiles for management
+      allow read: if hasRole('admin');
+      // Allow user creation during signup
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Videos collection - secure access based on visibility
+    match /videos/{videoId} {
+      // Only authenticated users can read public videos
+      allow read: if isAuthenticated() && resource.data.isPublic == true;
+      // Users can read their own videos (even private ones)
+      allow read: if isAuthenticated() && resource.data.uploadedBy == request.auth.uid;
+      // Users can create videos
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.uploadedBy;
+      // Users can update/delete only their own videos
+      allow update, delete: if isAuthenticated() && resource.data.uploadedBy == request.auth.uid;
+      // Admins have full access
+      allow read, write: if hasRole('admin');
+    }
+    
+    // Feedback collection - restricted to evaluators and involved parties
+    match /feedback/{feedbackId} {
+      // Evaluators can read feedback they created
+      allow read: if isAuthenticated() && resource.data.evaluatorId == request.auth.uid;
+      // Learners can read feedback about their videos
+      allow read: if isAuthenticated() && resource.data.learnerId == request.auth.uid;
+      // Only evaluators can create feedback
+      allow create: if isEvaluator() && request.auth.uid == request.resource.data.evaluatorId;
+      // Evaluators can update their own feedback
+      allow update: if isAuthenticated() && resource.data.evaluatorId == request.auth.uid;
+      // Admins and researchers have read access for analytics
+      allow read: if isAdminOrResearcher();
+      // Admins can delete feedback
+      allow delete: if hasRole('admin');
+    }
+    
+    // Progress collection - users can only access their own progress
+    match /progress/{progressId} {
+      // Users can read/write their own progress
+      allow read, write: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Allow creation if the userId matches the authenticated user
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
+      // Researchers and admins can read for analytics
+      allow read: if isAdminOrResearcher();
+    }
+    
+    // Analytics collection - highly restricted
+    match /analytics/{document=**} {
+      // Only researchers and admins can access analytics
+      allow read, write: if isAdminOrResearcher();
+    }
+    
+    // Default deny rule - no access to any other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,15 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Stethoscope, Video, Users, BarChart3, Shield, Award, LogOut } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { signInWithGoogle, signOut } from "@/lib/firebase";
 import { useLocation } from "wouter";
 
 export default function Landing() {
-  const { user, isAuthenticated } = useAuth();
+  const { userProfile, isAuthenticated } = useFirebaseAuth();
   const [, setLocation] = useLocation();
 
-  const handleLogout = () => {
-    window.location.href = "/api/logout";
+  const handleLogin = () => {
+    signInWithGoogle();
+  };
+
+  const handleLogout = async () => {
+    await signOut();
   };
 
   const handleRoleNavigation = (role: string) => {
@@ -29,7 +34,7 @@ export default function Landing() {
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
                 <span className="text-sm text-gray-600">
-                  Welcome, {user?.firstName || user?.email || "User"}
+                  Welcome, {userProfile?.firstName || userProfile?.email || "User"}
                 </span>
                 <Button 
                   onClick={handleLogout}
@@ -43,10 +48,10 @@ export default function Landing() {
               </div>
             ) : (
               <Button 
-                onClick={() => window.location.href = '/api/login'}
+                onClick={handleLogin}
                 className="bg-spartan-green hover:bg-deep-green text-white"
               >
-                Sign In
+                Sign In with Google
               </Button>
             )}
           </div>
@@ -99,11 +104,11 @@ export default function Landing() {
             </div>
           ) : (
             <Button 
-              onClick={() => window.location.href = '/api/login'}
+              onClick={handleLogin}
               size="lg"
               className="bg-white text-spartan-green hover:bg-gray-100"
             >
-              Get Started
+              Get Started with Google
             </Button>
           )}
         </div>
@@ -231,7 +236,7 @@ export default function Landing() {
             </div>
           ) : (
             <Button 
-              onClick={() => window.location.href = '/api/login'}
+              onClick={handleLogin}
               size="lg"
               className="bg-spartan-green hover:bg-deep-green text-white"
             >
