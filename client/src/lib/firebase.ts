@@ -35,8 +35,24 @@ googleProvider.addScope('email');
 googleProvider.addScope('profile');
 
 // Auth functions
-export const signInWithGoogle = () => {
-  return signInWithRedirect(auth, googleProvider);
+export const signInWithGoogle = async () => {
+  try {
+    console.log('Attempting Google sign-in...');
+    return await signInWithRedirect(auth, googleProvider);
+  } catch (error) {
+    console.error('Google sign-in error:', error);
+    
+    // Check if the error is due to domain configuration
+    if ((error as any).code === 'auth/unauthorized-domain') {
+      alert('Authentication Error: This domain is not authorized. Please configure this domain in your Firebase console under Authentication > Settings > Authorized domains.');
+    } else if ((error as any).code === 'auth/popup-blocked') {
+      alert('Popup blocked. Please allow popups for this site and try again.');
+    } else {
+      alert('Authentication failed. Please check your internet connection and try again.');
+    }
+    
+    throw error;
+  }
 };
 
 export const signOut = () => {

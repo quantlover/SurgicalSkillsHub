@@ -9,8 +9,24 @@ export default function Landing() {
   const { userProfile, isAuthenticated } = useFirebaseAuth();
   const [, setLocation] = useLocation();
 
-  const handleLogin = () => {
-    signInWithGoogle();
+  const handleLogin = async () => {
+    try {
+      console.log('Starting login process...');
+      await signInWithGoogle();
+    } catch (error) {
+      console.error('Login failed:', error);
+      
+      // Development fallback: Allow user to continue with demo mode
+      const useDemoMode = confirm(
+        'Firebase authentication failed. Would you like to continue in demo mode? (Click OK for demo mode, Cancel to retry)'
+      );
+      
+      if (useDemoMode) {
+        // Simulate successful authentication for development
+        console.log('Using demo mode');
+        setLocation('/learner');
+      }
+    }
   };
 
   const handleLogout = async () => {
@@ -103,13 +119,36 @@ export default function Landing() {
               </div>
             </div>
           ) : (
-            <Button 
-              onClick={handleLogin}
-              size="lg"
-              className="bg-spartan-green hover:bg-deep-green text-white px-8 py-3 font-semibold text-lg shadow-lg"
-            >
-              Get Started
-            </Button>
+            <div className="space-y-4">
+              <Button 
+                onClick={handleLogin}
+                size="lg"
+                className="bg-spartan-green hover:bg-deep-green text-white px-8 py-3 font-semibold text-lg shadow-lg"
+              >
+                Get Started
+              </Button>
+              <div className="mt-4">
+                <p className="text-sm text-gray-300 mb-2">Or try the demo:</p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  <Button 
+                    onClick={() => setLocation('/learner')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white/10 text-white border-white hover:bg-white/20"
+                  >
+                    Demo: Learner
+                  </Button>
+                  <Button 
+                    onClick={() => setLocation('/evaluator')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white/10 text-white border-white hover:bg-white/20"
+                  >
+                    Demo: Evaluator
+                  </Button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </section>
