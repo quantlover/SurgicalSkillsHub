@@ -19,20 +19,7 @@ export default function LearnerDashboard() {
   const [activeTab, setActiveTab] = useState("video-library");
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
+  // Demo mode - no authentication checks
 
   const { data: videos, isLoading: videosLoading } = useQuery({
     queryKey: ["/api/videos", { category: "reference" }],

@@ -16,20 +16,7 @@ export default function EvaluatorDashboard() {
   const { isAuthenticated, isLoading } = useDemoAuth();
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
+  // Demo mode - no authentication checks
 
   const { data: pendingVideos, isLoading: pendingLoading } = useQuery({
     queryKey: ["/api/feedback/pending"],
