@@ -121,77 +121,77 @@ export default function AiSkillDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-8">
         {/* Header */}
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center justify-center space-x-3">
-            <Brain className="h-8 w-8 text-green-600" />
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center justify-center space-x-2 sm:space-x-3">
+            <Brain className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
             <span>AI-Powered Skill Assessment</span>
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-base sm:text-lg text-gray-600 px-4">
             Personalized feedback and intelligent skill progression tracking
           </p>
         </div>
 
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="assessments">Recent Assessments</TabsTrigger>
-            <TabsTrigger value="progression">Skill Progression</TabsTrigger>
-            <TabsTrigger value="live-assessment">Live Assessment</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 py-2">Overview</TabsTrigger>
+            <TabsTrigger value="assessments" className="text-xs sm:text-sm px-2 py-2">Assessments</TabsTrigger>
+            <TabsTrigger value="progression" className="text-xs sm:text-sm px-2 py-2">Progression</TabsTrigger>
+            <TabsTrigger value="live-assessment" className="text-xs sm:text-sm px-2 py-2">Live AI</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
             {/* Quick Stats */}
             {overallStats && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                 <Card>
-                  <CardContent className="p-6">
+                  <CardContent className="p-3 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Average Score</p>
-                        <p className={`text-2xl font-bold ${getScoreColor(overallStats.averageScore)}`}>
+                        <p className="text-xs sm:text-sm font-medium text-gray-600">Average Score</p>
+                        <p className={`text-lg sm:text-2xl font-bold ${getScoreColor(overallStats.averageScore)}`}>
                           {overallStats.averageScore}%
                         </p>
                       </div>
-                      <BarChart3 className="h-8 w-8 text-blue-600" />
+                      <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
                     </div>
                   </CardContent>
                 </Card>
 
                 <Card>
-                  <CardContent className="p-6">
+                  <CardContent className="p-3 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Total Assessments</p>
-                        <p className="text-2xl font-bold">{overallStats.totalAssessments}</p>
+                        <p className="text-xs sm:text-sm font-medium text-gray-600">Total Assessments</p>
+                        <p className="text-lg sm:text-2xl font-bold">{overallStats.totalAssessments}</p>
                       </div>
-                      <Brain className="h-8 w-8 text-green-600" />
+                      <Brain className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
                     </div>
                   </CardContent>
                 </Card>
 
                 <Card>
-                  <CardContent className="p-6">
+                  <CardContent className="p-3 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Strongest Area</p>
-                        <p className="text-sm font-semibold text-green-700">{overallStats.strongestArea}</p>
+                        <p className="text-xs sm:text-sm font-medium text-gray-600">Strongest Area</p>
+                        <p className="text-xs sm:text-sm font-semibold text-green-700">{overallStats.strongestArea}</p>
                       </div>
-                      <Award className="h-8 w-8 text-yellow-600" />
+                      <Award className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600" />
                     </div>
                   </CardContent>
                 </Card>
 
                 <Card>
-                  <CardContent className="p-6">
+                  <CardContent className="p-3 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Growth Area</p>
-                        <p className="text-sm font-semibold text-orange-700">{overallStats.growthArea}</p>
+                        <p className="text-xs sm:text-sm font-medium text-gray-600">Growth Area</p>
+                        <p className="text-xs sm:text-sm font-semibold text-orange-700">{overallStats.growthArea}</p>
                       </div>
-                      <Target className="h-8 w-8 text-orange-600" />
+                      <Target className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600" />
                     </div>
                   </CardContent>
                 </Card>
@@ -210,7 +210,7 @@ export default function AiSkillDashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-4 sm:gap-6">
                   <div className="space-y-3">
                     <h4 className="font-medium flex items-center space-x-2">
                       <Zap className="h-4 w-4 text-blue-500" />
