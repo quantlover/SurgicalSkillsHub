@@ -5,59 +5,96 @@ import { apiRequest } from '@/lib/queryClient';
 interface AnalyticsTrackerProps {
   videoId: string;
   userId: string;
+  userRole: string; // 'learner', 'evaluator', 'researcher', 'admin'
   videoDuration: number;
+  skillLevel?: string;
+  learningPath?: string;
   onAnalyticsUpdate?: (data: any) => void;
 }
 
-interface VideoAnalyticsData {
+interface LearningRecordData {
+  watchId: string;
   videoId: string;
   userId: string;
-  viewStartTime: string;
-  viewEndTime?: string;
+  userRoleId: string;
+  sessionStartTime: string;
+  sessionEndTime?: string;
   watchDuration: number;
+  videoDuration: number;
   completionPercentage: number;
   isCompleted: boolean;
   pauseCount: number;
+  pauseTimestamps: number[];
   seekCount: number;
+  seekEvents: Array<{ from: number; to: number; timestamp: number }>;
   replayCount: number;
   playbackSpeed: number;
+  speedChanges: Array<{ speed: number; timestamp: number }>;
   maxProgressReached: number;
+  progressCheckpoints: Array<{ percentage: number; timestamp: number }>;
+  timeToCompletion?: number;
+  viewingPattern: any;
+  learningObjectives?: string[];
+  skillLevel?: string;
+  learningPath?: string;
   deviceType: string;
+  browserInfo: string;
+  screenResolution: string;
   accessMethod: string;
   referrerPage?: string;
+  engagementScore: number;
 }
 
 export function AnalyticsTracker({ 
   videoId, 
   userId, 
+  userRole,
   videoDuration, 
+  skillLevel = 'intermediate',
+  learningPath,
   onAnalyticsUpdate 
 }: AnalyticsTrackerProps) {
-  const [sessionData, setSessionData] = useState<VideoAnalyticsData>({
+  // Generate unique IDs for this learning session
+  const sessionIds = useRef(generateLearningRecordIds(userId, userRole));
+  
+  const [sessionData, setSessionData] = useState<LearningRecordData>({
+    watchId: sessionIds.current.watchId,
     videoId,
     userId,
-    viewStartTime: new Date().toISOString(),
+    userRoleId: sessionIds.current.userRoleId,
+    sessionStartTime: new Date().toISOString(),
     watchDuration: 0,
+    videoDuration,
     completionPercentage: 0,
     isCompleted: false,
     pauseCount: 0,
+    pauseTimestamps: [],
     seekCount: 0,
+    seekEvents: [],
     replayCount: 0,
     playbackSpeed: 1.0,
+    speedChanges: [],
     maxProgressReached: 0,
+    progressCheckpoints: [],
+    viewingPattern: {},
+    skillLevel,
+    learningPath,
     deviceType: getDeviceType(),
+    browserInfo: getBrowserInfo(),
+    screenResolution: getScreenResolution(),
     accessMethod: getAccessMethod(),
-    referrerPage: document.referrer || undefined
+    referrerPage: document.referrer || undefined,
+    engagementScore: 0
   });
 
   const watchStartTime = useRef<number>(Date.now());
   const lastPosition = useRef<number>(0);
   const trackingInterval = useRef<NodeJS.Timeout>();
 
-  // Mutation to save analytics data
-  const saveAnalytics = useMutation({
-    mutationFn: async (data: VideoAnalyticsData) => {
-      return apiRequest('/api/video-analytics', {
+  // Mutation to save learning record data
+  const saveLearningRecord = useMutation({
+    mutationFn: async (data: LearningRecordData) => {
+      return apiRequest('/api/learning-records', {
         method: 'POST',
         body: JSON.stringify(data)
       });
@@ -67,6 +104,36 @@ export function AnalyticsTracker({
     }
   });
 
+  // Generate unique learning record IDs
+  function generateLearningRecordIds(userId: string, role: string) {
+    const timestamp = Date.now().toString(36);
+    const random = Math.random().toString(36).substring(2, 8);
+    const watchId = `W${timestamp}${random}`.toUpperCase();
+    
+    // Generate role-specific user sub-ID
+    const userIdHash = hashString(userId).substring(0, 5);
+    const rolePrefixes: { [key: string]: string } = {
+      'learner': '1L',
+      'evaluator': '1E', 
+      'researcher': '1R',
+      'admin': '1A'
+    };
+    const prefix = rolePrefixes[role.toLowerCase()] || '1U';
+    const userRoleId = `${prefix}${userIdHash}`;
+    
+    return { watchId, userRoleId };
+  }
+
+  function hashString(str: string): string {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return Math.abs(hash).toString(36).toUpperCase();
+  }
+
   // Device type detection
   function getDeviceType(): string {
     const userAgent = navigator.userAgent.toLowerCase();
@@ -75,10 +142,26 @@ export function AnalyticsTracker({
     return 'desktop';
   }
 
+  // Browser information detection
+  function getBrowserInfo(): string {
+    const userAgent = navigator.userAgent;
+    if (userAgent.includes('Chrome')) return 'Chrome';
+    if (userAgent.includes('Firefox')) return 'Firefox';
+    if (userAgent.includes('Safari')) return 'Safari';
+    if (userAgent.includes('Edge')) return 'Edge';
+    return 'Unknown';
+  }
+
+  // Screen resolution detection
+  function getScreenResolution(): string {
+    return `${screen.width}x${screen.height}`;
+  }
+
   // Access method detection
   function getAccessMethod(): string {
     if (document.referrer.includes('search')) return 'search';
     if (document.referrer.includes('recommendation')) return 'recommendation';
+    if (document.referrer.includes('assignment')) return 'assignment';
     return 'direct';
   }
 
@@ -101,18 +184,26 @@ export function AnalyticsTracker({
   };
 
   // Track pause event
-  const trackPause = () => {
+  const trackPause = (currentTime: number) => {
     setSessionData(prev => ({
       ...prev,
-      pauseCount: prev.pauseCount + 1
+      pauseCount: prev.pauseCount + 1,
+      pauseTimestamps: [...prev.pauseTimestamps, currentTime]
     }));
   };
 
   // Track seek event
   const trackSeek = (fromTime: number, toTime: number) => {
+    const seekEvent = {
+      from: fromTime,
+      to: toTime,
+      timestamp: Date.now()
+    };
+    
     setSessionData(prev => ({
       ...prev,
-      seekCount: prev.seekCount + 1
+      seekCount: prev.seekCount + 1,
+      seekEvents: [...prev.seekEvents, seekEvent]
     }));
     
     // If seeking backwards significantly, consider it a replay
@@ -126,10 +217,39 @@ export function AnalyticsTracker({
 
   // Track playback speed change
   const trackPlaybackSpeedChange = (speed: number) => {
+    const speedChange = {
+      speed,
+      timestamp: Date.now()
+    };
+    
     setSessionData(prev => ({
       ...prev,
-      playbackSpeed: speed
+      playbackSpeed: speed,
+      speedChanges: [...prev.speedChanges, speedChange]
     }));
+  };
+
+  // Track progress checkpoints
+  const trackProgressCheckpoint = (percentage: number) => {
+    const checkpoint = {
+      percentage,
+      timestamp: Date.now()
+    };
+    
+    setSessionData(prev => ({
+      ...prev,
+      progressCheckpoints: [...prev.progressCheckpoints, checkpoint]
+    }));
+  };
+
+  // Calculate engagement score
+  const calculateEngagementScore = (data: LearningRecordData): number => {
+    const completionWeight = data.completionPercentage * 0.4;
+    const watchTimeWeight = Math.min((data.watchDuration / data.videoDuration) * 100, 100) * 0.3;
+    const engagementWeight = Math.max(0, 20 - (data.pauseCount * 2)) * 0.2;
+    const progressWeight = data.maxProgressReached * 0.1;
+    
+    return Math.min(100, completionWeight + watchTimeWeight + engagementWeight + progressWeight);
   };
 
   // Save analytics data periodically and on events

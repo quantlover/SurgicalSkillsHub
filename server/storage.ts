@@ -26,6 +26,8 @@ import {
   type InsertVideoPerformance,
   type UserAnalytics,
   type InsertUserAnalytics,
+  type LearningRecord,
+  type InsertLearningRecord,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, asc, sql, inArray } from "drizzle-orm";
@@ -74,6 +76,22 @@ export interface IStorage {
     approvedVideoId?: string;
   }): Promise<ScrapedVideo>;
   
+  // Individual learning records
+  createLearningRecord(record: InsertLearningRecord): Promise<LearningRecord>;
+  updateLearningRecord(watchId: string, updates: Partial<InsertLearningRecord>): Promise<LearningRecord>;
+  getLearningRecord(watchId: string): Promise<LearningRecord | undefined>;
+  getLearningRecordsByUser(userId: string, roleId?: string): Promise<LearningRecord[]>;
+  getLearningRecordsByVideo(videoId: string): Promise<LearningRecord[]>;
+  getAllLearningRecords(filters?: {
+    userId?: string;
+    roleId?: string;
+    videoId?: string;
+    dateFrom?: Date;
+    dateTo?: Date;
+    skillLevel?: string;
+    isCompleted?: boolean;
+  }): Promise<LearningRecord[]>;
+  
   // Video analytics for performance tracking
   createVideoAnalytics(analytics: InsertVideoAnalytics): Promise<VideoAnalytics>;
   updateVideoAnalytics(id: string, updates: Partial<InsertVideoAnalytics>): Promise<VideoAnalytics>;
@@ -88,6 +106,15 @@ export interface IStorage {
   getLearningProgressMetrics(userId?: string): Promise<any>;
   getVideoPerformanceReport(videoIds?: string[]): Promise<any>;
   getPopularContent(limit?: number): Promise<any>;
+  
+  // Individual learning records export
+  exportIndividualLearningRecords(filters?: {
+    userId?: string;
+    roleId?: string;
+    videoId?: string;
+    dateFrom?: Date;
+    dateTo?: Date;
+  }): Promise<any[]>;
   
   // Analytics and exports
   getAnalytics(): Promise<{

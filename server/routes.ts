@@ -7,6 +7,7 @@ import { speechToText } from "./services/speechToText";
 import { processVideo } from "./services/videoProcessor";
 import { VideoScraperService } from "./services/video-scraper.js";
 import { VideoProcessorService } from "./services/video-processor.js";
+import createLearningRecordsRoutes from "./learning-records-routes";
 
 // Configure multer for file uploads
 const upload = multer({
@@ -27,6 +28,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize video services
   const videoScraper = new VideoScraperService();
   const videoProcessor = new VideoProcessorService();
+  
+  // Mock storage for development - in production this would use a real storage implementation
+  const mockStorage = {
+    // Learning records methods
+    createLearningRecord: async (record: any) => ({ id: 'mock-id', ...record }),
+    updateLearningRecord: async (watchId: string, updates: any) => ({ watchId, ...updates }),
+    getLearningRecord: async (watchId: string) => null,
+    getLearningRecordsByUser: async (userId: string, roleId?: string) => [],
+    getLearningRecordsByVideo: async (videoId: string) => [],
+    getAllLearningRecords: async (filters?: any) => [],
+    exportIndividualLearningRecords: async (filters?: any) => [
+      {
+        watchId: 'W123ABC456',
+        userId: 'user-123',
+        userRoleId: '1L12345',
+        videoId: 'video-456',
+        videoTitle: 'Basic Suturing Techniques',
+        sessionStartTime: new Date().toISOString(),
+        sessionEndTime: new Date().toISOString(),
+        watchDuration: 480,
+        videoDuration: 600,
+        completionPercentage: 80,
+        isCompleted: false,
+        pauseCount: 3,
+        seekCount: 1,
+        replayCount: 0,
+        maxProgressReached: 85,
+        skillLevel: 'intermediate',
+        learningPath: 'basic-surgery',
+        deviceType: 'desktop',
+        browserInfo: 'Chrome',
+        screenResolution: '1920x1080',
+        accessMethod: 'direct',
+        engagementScore: 82
+      }
+    ]
+  };
+  
+  // Mount learning records routes
+  app.use('/api', createLearningRecordsRoutes(mockStorage as any));
   
   // Simple auth middleware for development
   const isAuthenticated = (req: any, res: any, next: any) => {

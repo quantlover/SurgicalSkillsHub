@@ -129,7 +129,63 @@ export const scrapedVideos = pgTable("scraped_videos", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Video analytics for detailed performance metrics
+// Individual learning records with unique identifiers
+export const learningRecords = pgTable('learning_records', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  watchId: varchar('watch_id').notNull().unique(), // Unique ID for each watch session
+  videoId: uuid('video_id').notNull().references(() => videos.id),
+  userId: uuid('user_id').notNull().references(() => users.id),
+  userRoleId: varchar('user_role_id').notNull(), // Role-specific sub-ID (1LXXXXX, 1RXXXXX, 1AXXXXX)
+  
+  // Session details
+  sessionStartTime: timestamp('session_start_time', { withTimezone: true }).notNull(),
+  sessionEndTime: timestamp('session_end_time', { withTimezone: true }),
+  watchDuration: integer('watch_duration').default(0), // seconds actually watched
+  videoDuration: integer('video_duration').notNull(), // total video length
+  completionPercentage: real('completion_percentage').default(0), // 0-100
+  isCompleted: boolean('is_completed').default(false),
+  
+  // Detailed engagement tracking
+  pauseCount: integer('pause_count').default(0),
+  pauseTimestamps: jsonb('pause_timestamps'), // Array of pause moments
+  seekCount: integer('seek_count').default(0),
+  seekEvents: jsonb('seek_events'), // Array of seek events with from/to times
+  replayCount: integer('replay_count').default(0),
+  playbackSpeed: real('playback_speed').default(1.0),
+  speedChanges: jsonb('speed_changes'), // Array of speed change events
+  
+  // Progress tracking
+  maxProgressReached: real('max_progress_reached').default(0), // highest % reached
+  progressCheckpoints: jsonb('progress_checkpoints'), // Array of progress milestones
+  timeToCompletion: integer('time_to_completion'), // total time to complete video
+  viewingPattern: jsonb('viewing_pattern'), // Detailed viewing behavior analysis
+  
+  // Learning context
+  learningObjectives: jsonb('learning_objectives'), // What user was trying to learn
+  preAssessmentScore: real('pre_assessment_score'), // Score before watching
+  postAssessmentScore: real('post_assessment_score'), // Score after watching
+  skillLevel: varchar('skill_level'), // beginner, intermediate, advanced, expert
+  learningPath: varchar('learning_path'), // Which curriculum path user is following
+  
+  // Technical context
+  deviceType: varchar('device_type').notNull(), // 'desktop', 'mobile', 'tablet'
+  browserInfo: varchar('browser_info'), // Browser and version
+  screenResolution: varchar('screen_resolution'), // Screen size during viewing
+  internetSpeed: varchar('internet_speed'), // Connection quality estimate
+  accessMethod: varchar('access_method').notNull(), // 'direct', 'search', 'recommendation', 'assignment'
+  referrerPage: varchar('referrer_page'),
+  
+  // Learning outcome metrics
+  retentionScore: real('retention_score'), // How well user retained information
+  engagementScore: real('engagement_score'), // Calculated engagement metric
+  difficultyRating: integer('difficulty_rating'), // User's subjective difficulty rating 1-5
+  satisfactionRating: integer('satisfaction_rating'), // User's satisfaction rating 1-5
+  
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+});
+
+// Video analytics for detailed performance metrics (aggregated from learning records)
 export const videoAnalytics = pgTable('video_analytics', {
   id: uuid('id').primaryKey().defaultRandom(),
   videoId: uuid('video_id').notNull().references(() => videos.id),
@@ -296,6 +352,17 @@ export const scrapedVideosRelations = relations(scrapedVideos, ({ one }) => ({
   }),
 }));
 
+export const learningRecordsRelations = relations(learningRecords, ({ one }) => ({
+  video: one(videos, {
+    fields: [learningRecords.videoId],
+    references: [videos.id],
+  }),
+  user: one(users, {
+    fields: [learningRecords.userId],
+    references: [users.id],
+  }),
+}));
+
 export const videoAnalyticsRelations = relations(videoAnalytics, ({ one }) => ({
   video: one(videos, {
     fields: [videoAnalytics.videoId],
@@ -357,6 +424,12 @@ export const insertScrapedVideoSchema = createInsertSchema(scrapedVideos).omit({
   scrapedAt: true,
 });
 
+export const insertLearningRecordSchema = createInsertSchema(learningRecords).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertVideoAnalyticsSchema = createInsertSchema(videoAnalytics).omit({
   id: true,
   createdAt: true,
@@ -390,6 +463,8 @@ export type LearningSession = typeof learningSessions.$inferSelect;
 export type InsertLearningSession = z.infer<typeof insertLearningSessionSchema>;
 export type ScrapedVideo = typeof scrapedVideos.$inferSelect;
 export type InsertScrapedVideo = z.infer<typeof insertScrapedVideoSchema>;
+export type LearningRecord = typeof learningRecords.$inferSelect;
+export type InsertLearningRecord = z.infer<typeof insertLearningRecordSchema>;
 export type VideoAnalytics = typeof videoAnalytics.$inferSelect;
 export type InsertVideoAnalytics = z.infer<typeof insertVideoAnalyticsSchema>;
 export type VideoPerformance = typeof videoPerformance.$inferSelect;

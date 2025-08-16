@@ -292,6 +292,65 @@ export default function VideoAnalyticsDashboard() {
     return csv;
   };
 
+  const handleExportIndividualRecords = async () => {
+    try {
+      // Fetch individual learning records from API
+      const response = await fetch('/api/learning-records/export', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch learning records');
+      }
+      
+      const learningRecords = await response.json();
+      
+      // Generate comprehensive CSV with individual records
+      const csvContent = generateIndividualRecordsCSV(learningRecords);
+      
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `individual_learning_records_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Failed to export individual learning records. Please try again.');
+    }
+  };
+
+  const generateIndividualRecordsCSV = (records: any[]) => {
+    let csv = '';
+    
+    // Header
+    csv += `Individual Learning Records Export\n`;
+    csv += `Generated: ${new Date().toLocaleDateString()}\n`;
+    csv += `Total Records: ${records.length}\n\n`;
+    
+    // Column headers
+    csv += `Watch ID,User ID,User Role ID,Video ID,Video Title,Session Start,Session End,Watch Duration (sec),Video Duration (sec),Completion %,Completed,Pause Count,Seek Count,Replay Count,Max Progress %,Skill Level,Learning Path,Device Type,Browser,Screen Resolution,Access Method,Engagement Score,Pre-Assessment,Post-Assessment,Difficulty Rating,Satisfaction Rating\n`;
+    
+    // Data rows
+    records.forEach((record: any) => {
+      const sessionDuration = record.sessionEndTime 
+        ? Math.round((new Date(record.sessionEndTime).getTime() - new Date(record.sessionStartTime).getTime()) / 1000)
+        : 'In Progress';
+      
+      csv += `"${record.watchId}","${record.userId}","${record.userRoleId}","${record.videoId}","${record.videoTitle || 'N/A'}","${new Date(record.sessionStartTime).toLocaleString()}","${record.sessionEndTime ? new Date(record.sessionEndTime).toLocaleString() : 'In Progress'}",${record.watchDuration},${record.videoDuration},${record.completionPercentage},"${record.isCompleted}",${record.pauseCount},${record.seekCount},${record.replayCount},${record.maxProgressReached},"${record.skillLevel || 'N/A'}","${record.learningPath || 'N/A'}","${record.deviceType}","${record.browserInfo}","${record.screenResolution}","${record.accessMethod}",${record.engagementScore || 0},${record.preAssessmentScore || 'N/A'},${record.postAssessmentScore || 'N/A'},${record.difficultyRating || 'N/A'},${record.satisfactionRating || 'N/A'}\n`;
+    });
+    
+    return csv;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <NavigationHeader currentRole="researcher" />
@@ -317,10 +376,16 @@ export default function VideoAnalyticsDashboard() {
                 <SelectItem value="1y">Last year</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" size="sm" onClick={handleExportReport}>
-              <Download className="h-4 w-4 mr-2" />
-              Export Report
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={handleExportReport}>
+                <Download className="h-4 w-4 mr-2" />
+                Export Report
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleExportIndividualRecords}>
+                <Download className="h-4 w-4 mr-2" />
+                Export Individual Records
+              </Button>
+            </div>
           </div>
         </div>
 
