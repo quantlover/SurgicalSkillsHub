@@ -69,6 +69,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mount learning records routes
   app.use('/api', createLearningRecordsRoutes(mockStorage as any));
   
+  // Quick fix for individual records export endpoint
+  app.get('/api/learning-records/export', async (req, res) => {
+    try {
+      const sampleRecords = [
+        {
+          watchId: 'W1ABC23456',
+          userId: 'user-dev-123',
+          userRoleId: '1L12345',
+          videoId: 'video-basic-suturing',
+          videoTitle: 'Basic Suturing Techniques',
+          sessionStartTime: new Date(Date.now() - 900000).toISOString(),
+          sessionEndTime: new Date(Date.now() - 420000).toISOString(),
+          watchDuration: 480,
+          videoDuration: 600,
+          completionPercentage: 80,
+          isCompleted: false,
+          pauseCount: 3,
+          seekCount: 1,
+          replayCount: 0,
+          maxProgressReached: 85,
+          skillLevel: 'intermediate',
+          learningPath: 'basic-surgery',
+          deviceType: 'desktop',
+          browserInfo: 'Chrome',
+          screenResolution: '1920x1080',
+          accessMethod: 'direct',
+          engagementScore: 82,
+          preAssessmentScore: 65,
+          postAssessmentScore: 78,
+          difficultyRating: 3,
+          satisfactionRating: 4
+        },
+        {
+          watchId: 'W2DEF78901',
+          userId: 'user-dev-456',
+          userRoleId: '1R67890',
+          videoId: 'video-advanced-knots',
+          videoTitle: 'Advanced Knot Tying',
+          sessionStartTime: new Date(Date.now() - 7200000).toISOString(),
+          sessionEndTime: new Date(Date.now() - 6600000).toISOString(),
+          watchDuration: 600,
+          videoDuration: 720,
+          completionPercentage: 83.3,
+          isCompleted: true,
+          pauseCount: 2,
+          seekCount: 0,
+          replayCount: 1,
+          maxProgressReached: 100,
+          skillLevel: 'advanced',
+          learningPath: 'advanced-surgery',
+          deviceType: 'tablet',
+          browserInfo: 'Safari',
+          screenResolution: '1024x768',
+          accessMethod: 'recommendation',
+          engagementScore: 91,
+          preAssessmentScore: 72,
+          postAssessmentScore: 89,
+          difficultyRating: 4,
+          satisfactionRating: 5
+        },
+        {
+          watchId: 'W3GHI34567',
+          userId: 'user-dev-789',
+          userRoleId: '1A11111',
+          videoId: 'video-instrument-handling',
+          videoTitle: 'Surgical Instrument Handling',
+          sessionStartTime: new Date(Date.now() - 3600000).toISOString(),
+          sessionEndTime: new Date(Date.now() - 3240000).toISOString(),
+          watchDuration: 360,
+          videoDuration: 450,
+          completionPercentage: 80,
+          isCompleted: false,
+          pauseCount: 1,
+          seekCount: 2,
+          replayCount: 0,
+          maxProgressReached: 85,
+          skillLevel: 'beginner',
+          learningPath: 'basic-surgery',
+          deviceType: 'mobile',
+          browserInfo: 'Chrome',
+          screenResolution: '375x667',
+          accessMethod: 'assignment',
+          engagementScore: 75,
+          preAssessmentScore: 45,
+          postAssessmentScore: 62,
+          difficultyRating: 2,
+          satisfactionRating: 4
+        }
+      ];
+      
+      res.json(sampleRecords);
+    } catch (error) {
+      console.error('Error exporting learning records:', error);
+      res.status(500).json({ error: 'Failed to export learning records' });
+    }
+  });
+  
   // Simple auth middleware for development
   const isAuthenticated = (req: any, res: any, next: any) => {
     req.user = { uid: 'dev-user-123' };

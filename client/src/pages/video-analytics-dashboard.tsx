@@ -295,18 +295,23 @@ export default function VideoAnalyticsDashboard() {
   const handleExportIndividualRecords = async () => {
     try {
       // Fetch individual learning records from API
-      const response = await fetch('/api/learning-records/export', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch('/api/learning-records/export');
       
       if (!response.ok) {
-        throw new Error('Failed to fetch learning records');
+        const errorText = await response.text();
+        console.error('API Response Error:', errorText);
+        throw new Error(`Failed to fetch learning records: ${response.status}`);
+      }
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const responseText = await response.text();
+        console.error('Invalid response format:', responseText);
+        throw new Error('Invalid response format - expected JSON');
       }
       
       const learningRecords = await response.json();
+      console.log('Fetched learning records:', learningRecords);
       
       // Generate comprehensive CSV with individual records
       const csvContent = generateIndividualRecordsCSV(learningRecords);
