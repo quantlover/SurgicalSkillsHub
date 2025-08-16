@@ -23,7 +23,8 @@ import {
   Clock,
   Database,
   Zap,
-  ExternalLink
+  ExternalLink,
+  BarChart3
 } from "lucide-react";
 
 interface ScrapingResult {
@@ -556,6 +557,15 @@ export default function VideoScraperDemo() {
                 >
                   <Database className="mr-2 h-4 w-4" />
                   Admin Dashboard
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full justify-start"
+                  onClick={() => window.location.href = '/analytics'}
+                >
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  Video Analytics
                 </Button>
               </CardContent>
             </Card>

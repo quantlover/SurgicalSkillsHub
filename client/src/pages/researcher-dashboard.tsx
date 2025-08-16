@@ -234,6 +234,14 @@ export default function ResearcherDashboard() {
                       2+ years
                     </Badge>
                   </Button>
+                  
+                  <Button
+                    onClick={() => window.location.href = '/analytics'}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white justify-start"
+                  >
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    Video Analytics Dashboard
+                  </Button>
                 </div>
               </CardContent>
             </Card>

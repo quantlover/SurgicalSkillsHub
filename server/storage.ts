@@ -20,6 +20,12 @@ import {
   type InsertLearningSession,
   type ScrapedVideo,
   type InsertScrapedVideo,
+  type VideoAnalytics,
+  type InsertVideoAnalytics,
+  type VideoPerformance,
+  type InsertVideoPerformance,
+  type UserAnalytics,
+  type InsertUserAnalytics,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, asc, sql, inArray } from "drizzle-orm";
@@ -67,6 +73,21 @@ export interface IStorage {
     reviewNotes?: string;
     approvedVideoId?: string;
   }): Promise<ScrapedVideo>;
+  
+  // Video analytics for performance tracking
+  createVideoAnalytics(analytics: InsertVideoAnalytics): Promise<VideoAnalytics>;
+  updateVideoAnalytics(id: string, updates: Partial<InsertVideoAnalytics>): Promise<VideoAnalytics>;
+  getVideoAnalytics(videoId: string, userId?: string): Promise<VideoAnalytics[]>;
+  getVideoPerformance(videoId: string): Promise<VideoPerformance | undefined>;
+  updateVideoPerformance(videoId: string, updates: Partial<InsertVideoPerformance>): Promise<VideoPerformance>;
+  getUserAnalytics(userId: string): Promise<UserAnalytics | undefined>;
+  updateUserAnalytics(userId: string, updates: Partial<InsertUserAnalytics>): Promise<UserAnalytics>;
+  
+  // Analytics aggregation and reporting
+  getEngagementMetrics(timeframe: string): Promise<any>;
+  getLearningProgressMetrics(userId?: string): Promise<any>;
+  getVideoPerformanceReport(videoIds?: string[]): Promise<any>;
+  getPopularContent(limit?: number): Promise<any>;
   
   // Analytics and exports
   getAnalytics(): Promise<{

@@ -129,6 +129,99 @@ export const scrapedVideos = pgTable("scraped_videos", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Video analytics for detailed performance metrics
+export const videoAnalytics = pgTable('video_analytics', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  videoId: uuid('video_id').notNull().references(() => videos.id),
+  userId: uuid('user_id').notNull().references(() => users.id),
+  
+  // View metrics
+  viewStartTime: timestamp('view_start_time', { withTimezone: true }).notNull(),
+  viewEndTime: timestamp('view_end_time', { withTimezone: true }),
+  watchDuration: integer('watch_duration'), // seconds watched
+  completionPercentage: real('completion_percentage'), // 0-100
+  isCompleted: boolean('is_completed').default(false),
+  
+  // Engagement metrics
+  pauseCount: integer('pause_count').default(0),
+  seekCount: integer('seek_count').default(0),
+  replayCount: integer('replay_count').default(0),
+  playbackSpeed: real('playback_speed').default(1.0),
+  
+  // Learning metrics
+  maxProgressReached: real('max_progress_reached').default(0), // highest % reached
+  timeToCompletion: integer('time_to_completion'), // total time to complete
+  averageViewingSession: integer('average_viewing_session'), // avg session length
+  totalViewingSessions: integer('total_viewing_sessions').default(1),
+  
+  // Context metrics
+  deviceType: varchar('device_type'), // 'desktop', 'mobile', 'tablet'
+  accessMethod: varchar('access_method'), // 'direct', 'search', 'recommendation'
+  referrerPage: varchar('referrer_page'),
+  
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+});
+
+// Video performance aggregates for quick dashboard queries
+export const videoPerformance = pgTable('video_performance', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  videoId: uuid('video_id').notNull().references(() => videos.id),
+  
+  // View statistics
+  totalViews: integer('total_views').default(0),
+  uniqueViewers: integer('unique_viewers').default(0),
+  averageWatchTime: real('average_watch_time').default(0),
+  completionRate: real('completion_rate').default(0), // percentage of viewers who completed
+  
+  // Engagement statistics
+  averagePauseCount: real('average_pause_count').default(0),
+  averageSeekCount: real('average_seek_count').default(0),
+  replayRate: real('replay_rate').default(0), // percentage who replayed
+  
+  // Learning effectiveness
+  averageTimeToCompletion: real('average_time_to_completion').default(0),
+  dropoffPoints: jsonb('dropoff_points'), // array of percentages where users commonly drop off
+  engagementScore: real('engagement_score').default(0), // computed engagement metric 0-100
+  
+  // Temporal metrics
+  peakViewingHours: jsonb('peak_viewing_hours'), // hours of day with most views
+  viewingTrends: jsonb('viewing_trends'), // JSON object of trend data
+  
+  lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+});
+
+// User learning analytics
+export const userAnalytics = pgTable('user_analytics', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id),
+  
+  // Overall learning metrics
+  totalWatchTime: integer('total_watch_time').default(0), // total seconds watched
+  videosCompleted: integer('videos_completed').default(0),
+  averageCompletionRate: real('average_completion_rate').default(0),
+  learningStreak: integer('learning_streak').default(0), // consecutive days with activity
+  
+  // Skill progression
+  skillLevels: jsonb('skill_levels'), // JSON object of skill assessments
+  competencyScores: jsonb('competency_scores'), // JSON object of competency metrics
+  learningPath: varchar('learning_path'), // current learning path
+  
+  // Engagement patterns
+  preferredViewingTime: varchar('preferred_viewing_time'), // time of day user is most active
+  averageSessionLength: real('average_session_length').default(0),
+  studyHabits: jsonb('study_habits'), // JSON object of study pattern analysis
+  
+  // Performance trends
+  weeklyProgress: jsonb('weekly_progress'), // JSON array of weekly metrics
+  monthlyProgress: jsonb('monthly_progress'), // JSON array of monthly metrics
+  improvementRate: real('improvement_rate').default(0), // rate of skill improvement
+  
+  lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   roles: many(userRoles),
@@ -203,6 +296,31 @@ export const scrapedVideosRelations = relations(scrapedVideos, ({ one }) => ({
   }),
 }));
 
+export const videoAnalyticsRelations = relations(videoAnalytics, ({ one }) => ({
+  video: one(videos, {
+    fields: [videoAnalytics.videoId],
+    references: [videos.id],
+  }),
+  user: one(users, {
+    fields: [videoAnalytics.userId],
+    references: [users.id],
+  }),
+}));
+
+export const videoPerformanceRelations = relations(videoPerformance, ({ one }) => ({
+  video: one(videos, {
+    fields: [videoPerformance.videoId],
+    references: [videos.id],
+  }),
+}));
+
+export const userAnalyticsRelations = relations(userAnalytics, ({ one }) => ({
+  user: one(users, {
+    fields: [userAnalytics.userId],
+    references: [users.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserRoleSchema = createInsertSchema(userRoles).omit({
   id: true,
@@ -239,6 +357,24 @@ export const insertScrapedVideoSchema = createInsertSchema(scrapedVideos).omit({
   scrapedAt: true,
 });
 
+export const insertVideoAnalyticsSchema = createInsertSchema(videoAnalytics).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertVideoPerformanceSchema = createInsertSchema(videoPerformance).omit({
+  id: true,
+  createdAt: true,
+  lastUpdated: true,
+});
+
+export const insertUserAnalyticsSchema = createInsertSchema(userAnalytics).omit({
+  id: true,
+  createdAt: true,
+  lastUpdated: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -254,3 +390,9 @@ export type LearningSession = typeof learningSessions.$inferSelect;
 export type InsertLearningSession = z.infer<typeof insertLearningSessionSchema>;
 export type ScrapedVideo = typeof scrapedVideos.$inferSelect;
 export type InsertScrapedVideo = z.infer<typeof insertScrapedVideoSchema>;
+export type VideoAnalytics = typeof videoAnalytics.$inferSelect;
+export type InsertVideoAnalytics = z.infer<typeof insertVideoAnalyticsSchema>;
+export type VideoPerformance = typeof videoPerformance.$inferSelect;
+export type InsertVideoPerformance = z.infer<typeof insertVideoPerformanceSchema>;
+export type UserAnalytics = typeof userAnalytics.$inferSelect;
+export type InsertUserAnalytics = z.infer<typeof insertUserAnalyticsSchema>;
