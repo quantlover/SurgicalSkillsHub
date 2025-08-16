@@ -108,7 +108,7 @@ export default function Landing() {
               size="lg"
               className="bg-spartan-green hover:bg-deep-green text-white px-8 py-3 font-semibold text-lg shadow-lg"
             >
-              Get Started with Google
+              Get Started
             </Button>
           )}
         </div>
