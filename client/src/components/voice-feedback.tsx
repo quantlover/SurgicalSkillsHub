@@ -22,7 +22,7 @@ export default function VoiceFeedback({ onFeedbackSaved }: VoiceFeedbackProps) {
   const audioChunksRef = useRef<Blob[]>([]);
 
   // Browser speech recognition as primary method
-  const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
+  const [recognition, setRecognition] = useState<any | null>(null);
 
   // Initialize speech recognition
   const initializeSpeechRecognition = () => {
@@ -35,7 +35,7 @@ export default function VoiceFeedback({ onFeedbackSaved }: VoiceFeedbackProps) {
       return null;
     }
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     
     recognition.continuous = true;
@@ -46,7 +46,7 @@ export default function VoiceFeedback({ onFeedbackSaved }: VoiceFeedbackProps) {
       setIsRecording(true);
     };
 
-    recognition.onresult = (event) => {
+    recognition.onresult = (event: any) => {
       let finalTranscript = '';
       let interimTranscript = '';
 
@@ -62,7 +62,7 @@ export default function VoiceFeedback({ onFeedbackSaved }: VoiceFeedbackProps) {
       setTranscription(prev => prev + finalTranscript);
     };
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
       setIsRecording(false);
       
