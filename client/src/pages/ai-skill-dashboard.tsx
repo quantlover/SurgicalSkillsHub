@@ -6,7 +6,8 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AiSkillAssessment } from '@/components/ai-skill-assessment';
-import { Brain, TrendingUp, Award, Target, BookOpen, Users, BarChart3, Lightbulb, Zap, ChevronRight } from 'lucide-react';
+import { Link } from 'wouter';
+import { Brain, TrendingUp, Award, Target, BookOpen, Users, BarChart3, Lightbulb, Zap, ChevronRight, ArrowLeft, Home, Stethoscope } from 'lucide-react';
 
 export default function AiSkillDashboard() {
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
@@ -121,18 +122,56 @@ export default function AiSkillDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-3 sm:p-6">
-      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center justify-center space-x-2 sm:space-x-3">
-            <Brain className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
-            <span>AI-Powered Skill Assessment</span>
-          </h1>
-          <p className="text-base sm:text-lg text-gray-600 px-4">
-            Personalized feedback and intelligent skill progression tracking
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-4">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                  <ArrowLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline">Back to Home</span>
+                </Button>
+              </Link>
+              <div className="flex items-center space-x-2">
+                <Stethoscope className="text-green-600 h-6 w-6" />
+                <span className="font-semibold text-gray-900">SutureLearn</span>
+                <span className="text-gray-400">|</span>
+                <Brain className="h-5 w-5 text-green-600" />
+                <span className="text-sm font-medium text-gray-700">AI Skills</span>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Link href="/analytics">
+                <Button variant="outline" size="sm" className="flex items-center space-x-1">
+                  <BarChart3 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Analytics</span>
+                </Button>
+              </Link>
+              <Link href="/learner">
+                <Button variant="outline" size="sm" className="flex items-center space-x-1">
+                  <Users className="h-4 w-4" />
+                  <span className="hidden sm:inline">Dashboard</span>
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
+      </header>
+
+      <div className="p-3 sm:p-6">
+        <div className="max-w-7xl mx-auto space-y-4 sm:space-y-8">
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center justify-center space-x-2 sm:space-x-3">
+              <Brain className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
+              <span>AI-Powered Skill Assessment</span>
+            </h1>
+            <p className="text-base sm:text-lg text-gray-600 px-4">
+              Personalized feedback and intelligent skill progression tracking
+            </p>
+          </div>
 
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
@@ -401,6 +440,7 @@ export default function AiSkillDashboard() {
             </Card>
           </TabsContent>
         </Tabs>
+        </div>
       </div>
     </div>
   );
