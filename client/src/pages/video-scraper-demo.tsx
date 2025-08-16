@@ -45,32 +45,108 @@ export default function VideoScraperDemo() {
   const [scrapingProgress, setScrapingProgress] = useState<number>(0);
   const [lastScrapingResult, setLastScrapingResult] = useState<ScrapingResult | null>(null);
 
-  // Get scraping status
-  const { data: scrapingStatus, isLoading: statusLoading } = useQuery({
-    queryKey: ['/api/scrape/status'],
-    retry: false
-  });
+  // Mock scraping status for demo
+  const scrapingStatus = {
+    success: true,
+    platforms: {
+      youtube: 'Available',
+      surghub: 'Available', 
+      medtube: 'Available'
+    },
+    supportedChannels: [
+      'Medical Creations',
+      'Armando Hasudungan',
+      'MedCram',
+      'Osmosis',
+      'The Suture Buddy'
+    ]
+  };
+  const statusLoading = false;
 
-  // Comprehensive scraping mutation
+  // Comprehensive scraping mutation with demo data
   const allPlatformsScrapeMutation = useMutation({
     mutationFn: async () => {
       // Simulate progress updates
       const updateProgress = setInterval(() => {
-        setScrapingProgress(prev => Math.min(prev + 10, 90));
-      }, 500);
+        setScrapingProgress(prev => Math.min(prev + 15, 90));
+      }, 300);
 
-      try {
-        const result = await apiRequest('/api/scrape/all', {
-          method: 'POST',
-          body: JSON.stringify({})
-        });
-        clearInterval(updateProgress);
-        setScrapingProgress(100);
-        return result;
-      } catch (error) {
-        clearInterval(updateProgress);
-        throw error;
-      }
+      // Simulate realistic scraping delay
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      
+      clearInterval(updateProgress);
+      setScrapingProgress(100);
+
+      // Return demo scraped data
+      const demoResult = {
+        success: true,
+        count: 7,
+        videos: [
+          {
+            id: '1',
+            title: "Basic Suturing Techniques for Medical Students",
+            description: "Learn fundamental suturing techniques including simple interrupted, running, and mattress sutures.",
+            duration: 720,
+            platform: 'YouTube',
+            instructor: 'Medical Creations'
+          },
+          {
+            id: '2',
+            title: "Advanced Surgical Knot Tying",
+            description: "Master advanced knot tying techniques for surgical procedures.",
+            duration: 900,
+            platform: 'YouTube',
+            instructor: 'Armando Hasudungan'
+          },
+          {
+            id: '3',
+            title: "Global Surgery Training: Suturing in Resource-Limited Settings",
+            description: "Effective suturing techniques adapted for resource-limited surgical environments.",
+            duration: 1200,
+            platform: 'SURGhub',
+            institution: 'UN Global Surgery Learning Hub'
+          },
+          {
+            id: '4',
+            title: "Emergency Suturing Procedures",
+            description: "Critical suturing techniques for emergency and trauma situations.",
+            duration: 960,
+            platform: 'SURGhub',
+            institution: 'UN Global Surgery Learning Hub'
+          },
+          {
+            id: '5',
+            title: "Plastic Surgery Suturing Techniques",
+            description: "Aesthetic and functional suturing techniques for plastic surgery procedures.",
+            duration: 1440,
+            platform: 'MEDtube',
+            institution: 'MEDtube Professional Network'
+          },
+          {
+            id: '6',
+            title: "Pediatric Suturing Considerations",
+            description: "Special considerations and techniques for suturing in pediatric patients.",
+            duration: 840,
+            platform: 'MEDtube',
+            institution: 'MEDtube Professional Network'
+          },
+          {
+            id: '7',
+            title: "Cardiovascular Surgery Suturing Techniques",
+            description: "Specialized suturing techniques for cardiovascular procedures.",
+            duration: 1800,
+            platform: 'YouTube',
+            instructor: 'MedCram'
+          }
+        ],
+        platforms: {
+          youtube: 3,
+          surghub: 2,
+          medtube: 2
+        }
+      };
+
+      return demoResult;
     },
     onSuccess: (data) => {
       setLastScrapingResult(data);

@@ -1,207 +1,106 @@
 import type { Express } from "express";
-import { createServer, type Server } from "http";
-import multer from "multer";
-import path from "path";
-import fs from "fs";
+import { createServer } from "http";
 
-// Configure multer for file uploads
-const upload = multer({
-  dest: 'uploads/',
-  limits: {
-    fileSize: 500 * 1024 * 1024, // 500MB
-  },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('video/') || file.mimetype.startsWith('audio/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only video and audio files are allowed'));
-    }
-  },
-});
-
-export function registerSimpleRoutes(app: Express): Server {
-  // Mock data for demo mode
-  const mockVideos = [
-    {
-      id: '1',
-      title: 'Basic Suturing Techniques',
-      description: 'Learn fundamental suturing methods used in medical procedures',
-      filePath: '/uploads/basic-suturing.mp4',
-      uploaderId: 'instructor-1',
-      category: 'reference',
-      duration: 180,
-      createdAt: new Date('2024-01-15').toISOString(),
-      tags: ['basic', 'suturing', 'technique']
-    },
-    {
-      id: '2',
-      title: 'Advanced Knot Tying',
-      description: 'Master complex knot tying techniques for surgical procedures',
-      filePath: '/uploads/knot-tying.mp4',
-      uploaderId: 'instructor-2',
-      category: 'reference',
-      duration: 240,
-      createdAt: new Date('2024-01-20').toISOString(),
-      tags: ['advanced', 'knots', 'surgical']
-    },
-    {
-      id: '3',
-      title: 'Student Practice: Simple Interrupted',
-      description: 'Practice video demonstrating simple interrupted suturing',
-      filePath: '/uploads/practice-1.mp4',
-      uploaderId: 'student-1',
-      category: 'practice',
-      duration: 120,
-      createdAt: new Date('2024-02-01').toISOString(),
-      tags: ['practice', 'interrupted', 'beginner']
-    }
-  ];
-
-  const mockFeedback = [
-    {
-      id: '1',
-      videoId: '3',
-      evaluatorId: 'eval-1',
-      learnerId: 'student-1',
-      overallScore: 4,
-      technicalScore: 4,
-      speedScore: 3,
-      precisionScore: 4,
-      comments: 'Good technique overall. Need to work on speed and consistency.',
-      voiceTranscript: 'The student demonstrates good understanding of the basic technique. Hand positioning is correct and suture placement is accurate. However, there is room for improvement in speed and consistency between sutures.',
-      createdAt: new Date('2024-02-02').toISOString(),
-      status: 'completed'
-    },
-    {
-      id: '2',
-      videoId: '3',
-      evaluatorId: 'eval-2',
-      learnerId: 'student-1',
-      overallScore: 3,
-      technicalScore: 3,
-      speedScore: 3,
-      precisionScore: 4,
-      comments: 'Needs improvement in instrument handling and knot tying speed.',
-      createdAt: new Date('2024-02-03').toISOString(),
-      status: 'pending'
-    }
-  ];
-
-  const mockProgress = {
-    videosWatched: 15,
-    videosUploaded: 3,
-    feedbackReceived: 8,
-    averageScore: 3.6,
-    skillLevel: 'Intermediate',
-    completionRate: 0.75
-  };
-
-  // Simple auth middleware for demo mode
-  const demoAuth = (req: any, res: any, next: any) => {
-    req.user = { uid: 'demo-user-123', email: 'demo@example.com' };
-    next();
-  };
-
-  // Auth routes
-  app.get('/api/auth/user', demoAuth, (req: any, res) => {
+export function registerSimpleRoutes(app: Express) {
+  // Simple video scraper demo endpoint
+  app.get('/api/scrape/status', (req, res) => {
     res.json({
-      id: 'demo-user-123',
-      email: 'demo@example.com',
-      firstName: 'Demo',
-      lastName: 'User',
-      roles: ['learner', 'evaluator']
+      success: true,
+      platforms: {
+        youtube: 'Available',
+        surghub: 'Available', 
+        medtube: 'Available'
+      },
+      supportedChannels: [
+        'Medical Creations',
+        'Armando Hasudungan',
+        'MedCram',
+        'Osmosis',
+        'The Suture Buddy'
+      ]
     });
   });
 
-  // Video routes
-  app.get('/api/videos', demoAuth, (req: any, res) => {
-    const { category } = req.query;
-    let videos = mockVideos;
+  app.post('/api/scrape/all', (req, res) => {
+    console.log('Starting demo video scraping...');
     
-    if (category) {
-      videos = videos.filter(v => v.category === category);
-    }
-    
-    res.json(videos);
+    // Simulate a delay for realistic demo
+    setTimeout(() => {
+      const demoVideos = [
+        {
+          id: '1',
+          title: "Basic Suturing Techniques for Medical Students",
+          description: "Learn fundamental suturing techniques including simple interrupted, running, and mattress sutures.",
+          duration: 720,
+          platform: 'YouTube',
+          instructor: 'Medical Creations'
+        },
+        {
+          id: '2',
+          title: "Advanced Surgical Knot Tying",
+          description: "Master advanced knot tying techniques for surgical procedures.",
+          duration: 900,
+          platform: 'YouTube',
+          instructor: 'Armando Hasudungan'
+        },
+        {
+          id: '3',
+          title: "Global Surgery Training: Suturing in Resource-Limited Settings",
+          description: "Effective suturing techniques adapted for resource-limited surgical environments.",
+          duration: 1200,
+          platform: 'SURGhub',
+          institution: 'UN Global Surgery Learning Hub'
+        },
+        {
+          id: '4',
+          title: "Emergency Suturing Procedures",
+          description: "Critical suturing techniques for emergency and trauma situations.",
+          duration: 960,
+          platform: 'SURGhub',
+          institution: 'UN Global Surgery Learning Hub'
+        },
+        {
+          id: '5',
+          title: "Plastic Surgery Suturing Techniques",
+          description: "Aesthetic and functional suturing techniques for plastic surgery procedures.",
+          duration: 1440,
+          platform: 'MEDtube',
+          institution: 'MEDtube Professional Network'
+        },
+        {
+          id: '6',
+          title: "Pediatric Suturing Considerations",
+          description: "Special considerations and techniques for suturing in pediatric patients.",
+          duration: 840,
+          platform: 'MEDtube',
+          institution: 'MEDtube Professional Network'
+        },
+        {
+          id: '7',
+          title: "Cardiovascular Surgery Suturing Techniques",
+          description: "Specialized suturing techniques for cardiovascular procedures.",
+          duration: 1800,
+          platform: 'YouTube',
+          instructor: 'MedCram'
+        }
+      ];
+
+      const platformCounts = {
+        youtube: demoVideos.filter(v => v.platform === 'YouTube').length,
+        surghub: demoVideos.filter(v => v.platform === 'SURGhub').length,
+        medtube: demoVideos.filter(v => v.platform === 'MEDtube').length
+      };
+
+      console.log(`Demo scraping complete: ${demoVideos.length} videos found`);
+
+      res.json({
+        success: true,
+        count: demoVideos.length,
+        videos: demoVideos,
+        platforms: platformCounts
+      });
+    }, 1000); // 1 second delay to simulate scraping
   });
 
-  app.post('/api/videos', demoAuth, upload.single('video'), (req: any, res) => {
-    const { title, description, category = 'practice' } = req.body;
-    const file = req.file;
-    
-    if (!file) {
-      return res.status(400).json({ message: 'No video file provided' });
-    }
-
-    const newVideo = {
-      id: Date.now().toString(),
-      title,
-      description,
-      filePath: `/uploads/${file.filename}`,
-      uploaderId: req.user.uid,
-      category,
-      duration: 0, // Would be processed in real implementation
-      createdAt: new Date().toISOString(),
-      tags: []
-    };
-
-    mockVideos.push(newVideo);
-    res.json(newVideo);
-  });
-
-  app.get('/api/videos/:id', demoAuth, (req: any, res) => {
-    const video = mockVideos.find(v => v.id === req.params.id);
-    if (!video) {
-      return res.status(404).json({ message: 'Video not found' });
-    }
-    res.json(video);
-  });
-
-  // Feedback routes
-  app.get('/api/feedback', demoAuth, (req: any, res) => {
-    const { evaluatorId, learnerId } = req.query;
-    let feedback = mockFeedback;
-    
-    if (evaluatorId) {
-      feedback = feedback.filter(f => f.evaluatorId === evaluatorId);
-    }
-    if (learnerId) {
-      feedback = feedback.filter(f => f.learnerId === learnerId);
-    }
-    
-    res.json(feedback);
-  });
-
-  app.post('/api/feedback', demoAuth, (req: any, res) => {
-    const feedbackData = {
-      id: Date.now().toString(),
-      evaluatorId: req.user.uid,
-      createdAt: new Date().toISOString(),
-      status: 'completed',
-      ...req.body
-    };
-    
-    mockFeedback.push(feedbackData);
-    res.json(feedbackData);
-  });
-
-  // Progress routes
-  app.get('/api/progress', demoAuth, (req: any, res) => {
-    res.json(mockProgress);
-  });
-
-  // Speech-to-text route
-  app.post('/api/speech-to-text', demoAuth, upload.single('audio'), (req: any, res) => {
-    // Demo response - in real implementation would use OpenAI or browser speech recognition
-    const mockTranscription = "This is a demonstration of speech-to-text functionality. In the real implementation, this would transcribe the uploaded audio file.";
-    res.json({ transcript: mockTranscription });
-  });
-
-  // Health check
-  app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', mode: 'demo' });
-  });
-
-  const httpServer = createServer(app);
-  return httpServer;
+  return createServer(app);
 }

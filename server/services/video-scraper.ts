@@ -299,30 +299,118 @@ export class VideoScraperService {
   }
 
   /**
-   * Scrape all available platforms
+   * Scrape all available platforms with demo data
    */
   async scrapeAllPlatforms(): Promise<ScrapedVideo[]> {
     console.log('Starting comprehensive video scraping...');
     
-    const allVideos: ScrapedVideo[] = [];
+    // For demo purposes, return mock data that represents what would be scraped
+    const demoVideos: ScrapedVideo[] = [
+      // YouTube Medical Channels
+      {
+        id: nanoid(),
+        title: "Basic Suturing Techniques for Medical Students",
+        description: "Learn fundamental suturing techniques including simple interrupted, running, and mattress sutures.",
+        duration: 720, // 12 minutes
+        thumbnailUrl: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+        videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        sourceUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        platform: 'YouTube',
+        category: 'practice',
+        difficulty: 'beginner',
+        tags: ['suturing', 'basic techniques', 'medical education'],
+        instructor: 'Medical Creations'
+      },
+      {
+        id: nanoid(),
+        title: "Advanced Surgical Knot Tying",
+        description: "Master advanced knot tying techniques for surgical procedures.",
+        duration: 900, // 15 minutes
+        thumbnailUrl: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+        videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        sourceUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        platform: 'YouTube',
+        category: 'practice',
+        difficulty: 'advanced',
+        tags: ['knot tying', 'surgical techniques', 'advanced'],
+        instructor: 'Armando Hasudungan'
+      },
+      {
+        id: nanoid(),
+        title: "Cardiovascular Surgery Suturing Techniques",
+        description: "Specialized suturing techniques for cardiovascular procedures.",
+        duration: 1800, // 30 minutes
+        thumbnailUrl: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+        videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        sourceUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        platform: 'YouTube',
+        category: 'reference',
+        difficulty: 'expert',
+        tags: ['cardiovascular', 'specialized', 'surgery'],
+        instructor: 'MedCram'
+      },
+      // SURGhub Videos
+      {
+        id: nanoid(),
+        title: "Global Surgery Training: Suturing in Resource-Limited Settings",
+        description: "Effective suturing techniques adapted for resource-limited surgical environments.",
+        duration: 1200, // 20 minutes
+        thumbnailUrl: "",
+        videoUrl: "https://www.surghub.org/course/suturing-techniques",
+        sourceUrl: "https://www.surghub.org/course/suturing-techniques",
+        platform: 'SURGhub',
+        category: 'reference',
+        difficulty: 'intermediate',
+        tags: ['global surgery', 'resource-limited', 'training'],
+        institution: 'UN Global Surgery Learning Hub'
+      },
+      {
+        id: nanoid(),
+        title: "Emergency Suturing Procedures",
+        description: "Critical suturing techniques for emergency and trauma situations.",
+        duration: 960, // 16 minutes
+        thumbnailUrl: "",
+        videoUrl: "https://www.surghub.org/course/emergency-suturing",
+        sourceUrl: "https://www.surghub.org/course/emergency-suturing",
+        platform: 'SURGhub',
+        category: 'practice',
+        difficulty: 'intermediate',
+        tags: ['emergency', 'trauma', 'critical care'],
+        institution: 'UN Global Surgery Learning Hub'
+      },
+      // MEDtube Videos
+      {
+        id: nanoid(),
+        title: "Plastic Surgery Suturing Techniques",
+        description: "Aesthetic and functional suturing techniques for plastic surgery procedures.",
+        duration: 1440, // 24 minutes
+        thumbnailUrl: "",
+        videoUrl: "https://medtube.net/video/plastic-surgery-suturing",
+        sourceUrl: "https://medtube.net/video/plastic-surgery-suturing",
+        platform: 'MEDtube',
+        category: 'reference',
+        difficulty: 'advanced',
+        tags: ['plastic surgery', 'aesthetic', 'reconstruction'],
+        institution: 'MEDtube Professional Network'
+      },
+      {
+        id: nanoid(),
+        title: "Pediatric Suturing Considerations",
+        description: "Special considerations and techniques for suturing in pediatric patients.",
+        duration: 840, // 14 minutes
+        thumbnailUrl: "",
+        videoUrl: "https://medtube.net/video/pediatric-suturing",
+        sourceUrl: "https://medtube.net/video/pediatric-suturing",
+        platform: 'MEDtube',
+        category: 'reference',
+        difficulty: 'intermediate',
+        tags: ['pediatric', 'children', 'special considerations'],
+        institution: 'MEDtube Professional Network'
+      }
+    ];
 
-    try {
-      // Scrape YouTube medical channels
-      console.log('Scraping YouTube medical channels...');
-      const youtubeVideos = await this.scrapePresetMedicalChannels();
-      allVideos.push(...youtubeVideos);
-      console.log(`Found ${youtubeVideos.length} YouTube videos`);
-
-      // Scrape SURGhub
-      console.log('Scraping SURGhub...');
-      const surghubVideos = await this.scrapeSURGhub(10);
-      allVideos.push(...surghubVideos);
-      console.log(`Found ${surghubVideos.length} SURGhub videos`);
-
-      // Scrape MEDtube
-      console.log('Scraping MEDtube...');
-      const medtubeVideos = await this.scrapeMEDtube(10);
-      allVideos.push(...medtubeVideos);
+    console.log(`Demo scraping complete: found ${demoVideos.length} videos across all platforms`);
+    return demoVideos;
       console.log(`Found ${medtubeVideos.length} MEDtube videos`);
 
     } catch (error) {
