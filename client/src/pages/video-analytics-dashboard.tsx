@@ -162,6 +162,136 @@ export default function VideoAnalyticsDashboard() {
     return num.toString();
   };
 
+  const handleExportReport = async () => {
+    try {
+      // Prepare comprehensive report data
+      const reportData = {
+        generatedAt: new Date().toISOString(),
+        timeframe: selectedTimeframe,
+        summary: {
+          totalViews: videoMetrics.reduce((sum, video) => sum + video.totalViews, 0),
+          averageCompletionRate: (videoMetrics.reduce((sum, video) => sum + video.completionRate, 0) / videoMetrics.length).toFixed(1),
+          averageWatchTime: Math.round(videoMetrics.reduce((sum, video) => sum + video.averageWatchTime, 0) / videoMetrics.length),
+          uniqueLearners: videoMetrics.reduce((sum, video) => sum + video.uniqueViewers, 0)
+        },
+        videoPerformance: videoMetrics.map(video => ({
+          title: video.title,
+          category: video.category,
+          difficulty: video.difficulty,
+          totalViews: video.totalViews,
+          uniqueViewers: video.uniqueViewers,
+          averageWatchTime: formatDuration(video.averageWatchTime),
+          completionRate: `${video.completionRate}%`,
+          engagementScore: video.engagementScore
+        })),
+        engagementTrends: engagementData,
+        learningProgress: learningProgress,
+        topPerformingVideos: topPerformingVideos.slice(0, 5).map((video, index) => ({
+          rank: index + 1,
+          title: video.title,
+          engagementScore: video.engagementScore,
+          views: formatNumber(video.totalViews),
+          completionRate: `${video.completionRate}%`
+        })),
+        insights: [
+          {
+            type: "Performance",
+            message: "Videos in the 'Fundamental Skills' category show 23% higher completion rates than average."
+          },
+          {
+            type: "Optimization",
+            message: "Videos between 8-12 minutes show the highest completion rates."
+          },
+          {
+            type: "Learning Path",
+            message: "Students who complete basic suturing first have 34% better performance in advanced techniques."
+          }
+        ]
+      };
+
+      // Generate CSV content
+      const csvContent = generateCSVReport(reportData);
+      
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `video_analytics_report_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Also generate JSON report
+      const jsonBlob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json;charset=utf-8;' });
+      const jsonLink = document.createElement('a');
+      const jsonUrl = URL.createObjectURL(jsonBlob);
+      jsonLink.setAttribute('href', jsonUrl);
+      jsonLink.setAttribute('download', `video_analytics_report_${new Date().toISOString().split('T')[0]}.json`);
+      jsonLink.style.visibility = 'hidden';
+      document.body.appendChild(jsonLink);
+      jsonLink.click();
+      document.body.removeChild(jsonLink);
+
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Failed to export report. Please try again.');
+    }
+  };
+
+  const generateCSVReport = (data: any) => {
+    let csv = '';
+    
+    // Header
+    csv += `Video Analytics Report\n`;
+    csv += `Generated: ${new Date(data.generatedAt).toLocaleDateString()}\n`;
+    csv += `Timeframe: ${data.timeframe}\n\n`;
+    
+    // Summary
+    csv += `SUMMARY\n`;
+    csv += `Total Views,${data.summary.totalViews}\n`;
+    csv += `Average Completion Rate,${data.summary.averageCompletionRate}%\n`;
+    csv += `Average Watch Time,${formatDuration(data.summary.averageWatchTime)}\n`;
+    csv += `Unique Learners,${data.summary.uniqueLearners}\n\n`;
+    
+    // Video Performance
+    csv += `VIDEO PERFORMANCE\n`;
+    csv += `Title,Category,Difficulty,Total Views,Unique Viewers,Avg Watch Time,Completion Rate,Engagement Score\n`;
+    data.videoPerformance.forEach((video: any) => {
+      csv += `"${video.title}","${video.category}","${video.difficulty}",${video.totalViews},${video.uniqueViewers},"${video.averageWatchTime}","${video.completionRate}",${video.engagementScore}\n`;
+    });
+    
+    csv += `\nTOP PERFORMING VIDEOS\n`;
+    csv += `Rank,Title,Engagement Score,Views,Completion Rate\n`;
+    data.topPerformingVideos.forEach((video: any) => {
+      csv += `${video.rank},"${video.title}",${video.engagementScore},"${video.views}","${video.completionRate}"\n`;
+    });
+    
+    // Engagement Trends
+    csv += `\nENGAGEMENT TRENDS\n`;
+    csv += `Day,Views,Completions,Watch Time (seconds)\n`;
+    data.engagementTrends.forEach((day: any) => {
+      csv += `${day.date},${day.views},${day.completions},${day.watchTime}\n`;
+    });
+    
+    // Learning Progress
+    csv += `\nLEARNING PROGRESS\n`;
+    csv += `Skill,Progress %,Improvement %\n`;
+    data.learningProgress.forEach((skill: any) => {
+      csv += `"${skill.skill}",${skill.progress},${skill.improvement}\n`;
+    });
+    
+    // Insights
+    csv += `\nKEY INSIGHTS\n`;
+    csv += `Type,Message\n`;
+    data.insights.forEach((insight: any) => {
+      csv += `"${insight.type}","${insight.message}"\n`;
+    });
+    
+    return csv;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <NavigationHeader currentRole="researcher" />
@@ -187,7 +317,7 @@ export default function VideoAnalyticsDashboard() {
                 <SelectItem value="1y">Last year</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleExportReport}>
               <Download className="h-4 w-4 mr-2" />
               Export Report
             </Button>
