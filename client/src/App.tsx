@@ -11,6 +11,7 @@ import EvaluatorDashboard from "@/pages/evaluator-dashboard";
 import ResearcherDashboard from "@/pages/researcher-dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
 import VideoScraperDemo from "@/pages/video-scraper-demo";
+import AdminVideoReview from "@/pages/admin-video-review";
 
 function Router() {
   const { isAuthenticated, isLoading } = useDemoAuth();
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/researcher" component={ResearcherDashboard} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/video-scraper" component={VideoScraperDemo} />
+      <Route path="/admin/video-review" component={AdminVideoReview} />
       <Route component={NotFound} />
     </Switch>
   );

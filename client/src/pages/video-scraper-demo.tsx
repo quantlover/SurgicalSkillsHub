@@ -77,11 +77,8 @@ export default function VideoScraperDemo() {
       clearInterval(updateProgress);
       setScrapingProgress(100);
 
-      // Return demo scraped data
-      const demoResult = {
-        success: true,
-        count: 7,
-        videos: [
+      // Store scraped videos in database for admin review
+      const scrapedVideosToStore = [
           {
             id: '1',
             title: "Basic Suturing Techniques for Medical Students",
@@ -138,12 +135,22 @@ export default function VideoScraperDemo() {
             platform: 'YouTube',
             instructor: 'MedCram'
           }
-        ],
+        ];
+
+      // Store scraped videos for admin review (demo simulation)
+      console.log('Storing', scrapedVideosToStore.length, 'videos for admin review');
+      // In production, these would be stored in the database for admin approval
+
+      const demoResult = {
+        success: true,
+        count: scrapedVideosToStore.length,
+        videos: scrapedVideosToStore,
         platforms: {
-          youtube: 3,
-          surghub: 2,
-          medtube: 2
-        }
+          youtube: scrapedVideosToStore.filter(v => v.platform === 'YouTube').length,
+          surghub: scrapedVideosToStore.filter(v => v.platform === 'SURGhub').length,
+          medtube: scrapedVideosToStore.filter(v => v.platform === 'MEDtube').length
+        },
+        message: 'Videos discovered and queued for admin review'
       };
 
       return demoResult;
@@ -254,12 +261,10 @@ export default function VideoScraperDemo() {
         });
         break;
       case 'admin-dashboard':
-        toast({
-          title: "Admin Dashboard",
-          description: "Redirecting to admin dashboard...",
-          variant: "default"
-        });
-        // In a real app, this would navigate to admin dashboard
+        window.location.href = '/admin/video-review';
+        break;
+      case 'video-review':
+        window.location.href = '/admin/video-review';
         break;
       default:
         break;
@@ -402,9 +407,14 @@ export default function VideoScraperDemo() {
                     
                     <Separator />
                     
-                    <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 p-3 rounded-lg">
-                      <CheckCircle className="h-4 w-4" />
-                      Videos have been successfully added to the library and are available for learners
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 p-3 rounded-lg">
+                        <Clock className="h-4 w-4" />
+                        Videos have been queued for admin review before being made available to learners
+                      </div>
+                      <div className="text-xs text-gray-600 pl-6">
+                        Admin can approve/reject these videos from the admin dashboard
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -528,6 +538,15 @@ export default function VideoScraperDemo() {
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Visit SURGhub
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full justify-start"
+                  onClick={() => handleQuickLinkAction('video-review')}
+                >
+                  <Database className="mr-2 h-4 w-4" />
+                  Review Scraped Videos
                 </Button>
                 <Button 
                   variant="outline" 

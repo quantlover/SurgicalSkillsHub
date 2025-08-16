@@ -5,6 +5,7 @@ import {
   feedback,
   userProgress,
   learningSessions,
+  scrapedVideos,
   type User,
   type UpsertUser,
   type UserRole,
@@ -17,6 +18,8 @@ import {
   type InsertUserProgress,
   type LearningSession,
   type InsertLearningSession,
+  type ScrapedVideo,
+  type InsertScrapedVideo,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, asc, sql, inArray } from "drizzle-orm";
@@ -53,6 +56,17 @@ export interface IStorage {
   // Learning sessions
   createLearningSession(session: InsertLearningSession): Promise<LearningSession>;
   updateLearningSession(id: string, updates: Partial<InsertLearningSession>): Promise<LearningSession>;
+  
+  // Scraped videos for admin review
+  createScrapedVideo(scrapedVideo: InsertScrapedVideo): Promise<ScrapedVideo>;
+  getScrapedVideosPendingReview(): Promise<ScrapedVideo[]>;
+  getScrapedVideosByStatus(status: 'pending' | 'approved' | 'rejected'): Promise<ScrapedVideo[]>;
+  updateScrapedVideoReview(id: string, review: {
+    reviewStatus: 'approved' | 'rejected';
+    reviewedBy: string;
+    reviewNotes?: string;
+    approvedVideoId?: string;
+  }): Promise<ScrapedVideo>;
   
   // Analytics and exports
   getAnalytics(): Promise<{

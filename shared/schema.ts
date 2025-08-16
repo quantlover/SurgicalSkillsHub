@@ -103,6 +103,32 @@ export const learningSessions = pgTable("learning_sessions", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Scraped videos pending admin review
+export const scrapedVideos = pgTable("scraped_videos", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  duration: integer("duration"), // in seconds
+  thumbnailUrl: varchar("thumbnail_url"),
+  videoUrl: varchar("video_url").notNull(),
+  sourceUrl: varchar("source_url").notNull(),
+  platform: varchar("platform").notNull(), // 'YouTube', 'SURGhub', 'MEDtube'
+  category: varchar("category").notNull(), // 'practice', 'reference'
+  difficulty: varchar("difficulty"), // 'beginner', 'intermediate', 'advanced', 'expert'
+  tags: jsonb("tags"), // array of tags
+  instructor: varchar("instructor"), // for YouTube videos
+  institution: varchar("institution"), // for institutional videos
+  scrapedAt: timestamp("scraped_at").defaultNow(),
+  scrapedBy: varchar("scraped_by").references(() => users.id).notNull(),
+  reviewStatus: varchar("review_status").default("pending").notNull(), // 'pending', 'approved', 'rejected'
+  reviewedBy: varchar("reviewed_by").references(() => users.id),
+  reviewedAt: timestamp("reviewed_at"),
+  reviewNotes: text("review_notes"),
+  approvedVideoId: uuid("approved_video_id").references(() => videos.id), // links to main videos table when approved
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   roles: many(userRoles),
@@ -162,6 +188,21 @@ export const learningSessionsRelations = relations(learningSessions, ({ one }) =
   }),
 }));
 
+export const scrapedVideosRelations = relations(scrapedVideos, ({ one }) => ({
+  scrapedBy: one(users, {
+    fields: [scrapedVideos.scrapedBy],
+    references: [users.id],
+  }),
+  reviewedBy: one(users, {
+    fields: [scrapedVideos.reviewedBy],
+    references: [users.id],
+  }),
+  approvedVideo: one(videos, {
+    fields: [scrapedVideos.approvedVideoId],
+    references: [videos.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserRoleSchema = createInsertSchema(userRoles).omit({
   id: true,
@@ -191,6 +232,13 @@ export const insertLearningSessionSchema = createInsertSchema(learningSessions).
   createdAt: true,
 });
 
+export const insertScrapedVideoSchema = createInsertSchema(scrapedVideos).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  scrapedAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -204,3 +252,5 @@ export type UserProgress = typeof userProgress.$inferSelect;
 export type InsertUserProgress = z.infer<typeof insertUserProgressSchema>;
 export type LearningSession = typeof learningSessions.$inferSelect;
 export type InsertLearningSession = z.infer<typeof insertLearningSessionSchema>;
+export type ScrapedVideo = typeof scrapedVideos.$inferSelect;
+export type InsertScrapedVideo = z.infer<typeof insertScrapedVideoSchema>;
