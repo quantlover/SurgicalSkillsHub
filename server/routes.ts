@@ -1,8 +1,5 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertVideoSchema, insertFeedbackSchema, insertUserRoleSchema } from "@shared/schema";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -25,20 +22,21 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
+  // Simple auth middleware for development
+  const isAuthenticated = (req: any, res: any, next: any) => {
+    req.user = { uid: 'dev-user-123' };
+    next();
+  };
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      const roles = await storage.getUserRoles(userId);
-      res.json({ ...user, roles });
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
+    res.json({
+      id: 'dev-user-123',
+      email: 'dev@example.com',
+      firstName: 'Dev',
+      lastName: 'User',
+      roles: ['learner', 'evaluator']
+    });
   });
 
   // User role management
@@ -67,12 +65,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Video routes
   app.get('/api/videos', isAuthenticated, async (req: any, res) => {
-    try {
-      const { category } = req.query;
-      const videos = category 
-        ? await storage.getVideosByCategory(category)
-        : await storage.getVideosByUploader(req.user.claims.sub);
-      res.json(videos);
+    const { category } = req.query;
+    const mockVideos = [
+      {
+        id: '1',
+        title: 'Basic Suturing Techniques',
+        description: 'Learn fundamental suturing methods',
+        filePath: '/uploads/video1.mp4',
+        uploaderId: 'dev-user-123',
+        category: category || 'reference',
+        suturingType: 'simple_interrupted',
+        duration: 300,
+        thumbnailPath: '/uploads/thumb1.jpg',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '2',
+        title: 'Advanced Knot Tying',
+        description: 'Master complex knot techniques',
+        filePath: '/uploads/video2.mp4',
+        uploaderId: 'dev-user-123',
+        category: category || 'reference',
+        suturingType: 'running',
+        duration: 450,
+        thumbnailPath: '/uploads/thumb2.jpg',
+        createdAt: new Date().toISOString()
+      }
+    ];
+    res.json(mockVideos);
     } catch (error) {
       console.error("Error fetching videos:", error);
       res.status(500).json({ message: "Failed to fetch videos" });

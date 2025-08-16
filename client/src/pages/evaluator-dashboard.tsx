@@ -64,7 +64,7 @@ export default function EvaluatorDashboard() {
               <div className="flex justify-between items-center">
                 <CardTitle className="text-xl">Pending Reviews</CardTitle>
                 <Badge variant="secondary" className="bg-warning-orange text-white">
-                  {pendingVideos?.length || 0} pending
+                  {Array.isArray(pendingVideos) ? pendingVideos.length : 0} pending
                 </Badge>
               </div>
             </CardHeader>
@@ -74,7 +74,7 @@ export default function EvaluatorDashboard() {
                   <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-spartan-green mx-auto"></div>
                   </div>
-                ) : pendingVideos?.length ? (
+                ) : Array.isArray(pendingVideos) && pendingVideos.length ? (
                   pendingVideos.map((video: any) => (
                     <div
                       key={video.id}
@@ -191,7 +191,7 @@ export default function EvaluatorDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {feedbackHistory?.length ? (
+              {Array.isArray(feedbackHistory) && feedbackHistory.length ? (
                 feedbackHistory.map((feedback: any) => (
                   <div key={feedback.id} className="border-l-4 border-spartan-green pl-4">
                     <div className="flex justify-between items-start mb-2">

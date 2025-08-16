@@ -152,7 +152,7 @@ export default function LearnerDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {recentFeedback?.length ? (
+                    {Array.isArray(recentFeedback) && recentFeedback.length ? (
                       recentFeedback.map((feedback: any) => (
                         <div key={feedback.id} className="border-l-4 border-spartan-green pl-4">
                           <div className="flex justify-between items-start mb-2">
@@ -215,7 +215,7 @@ export default function LearnerDashboard() {
                       <div className="text-center py-4">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-spartan-green mx-auto"></div>
                       </div>
-                    ) : videos?.length ? (
+                    ) : Array.isArray(videos) && videos.length ? (
                       videos.map((video: any) => (
                         <div
                           key={video.id}
@@ -265,26 +265,26 @@ export default function LearnerDashboard() {
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Videos Watched</span>
                     <span className="text-sm font-semibold text-spartan-green">
-                      {userProgress?.videosWatched || 0}
+                      {(userProgress as any)?.videosWatched || 0}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Practice Videos</span>
                     <span className="text-sm font-semibold text-spartan-green">
-                      {userProgress?.videosUploaded || 0}
+                      {(userProgress as any)?.videosUploaded || 0}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Feedback Received</span>
                     <span className="text-sm font-semibold text-spartan-green">
-                      {userProgress?.feedbackReceived || 0}
+                      {(userProgress as any)?.feedbackReceived || 0}
                     </span>
                   </div>
-                  {userProgress?.averageScore && (
+                  {(userProgress as any)?.averageScore && (
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600">Average Score</span>
                       <span className="text-sm font-semibold text-spartan-green">
-                        {userProgress.averageScore.toFixed(1)}/5
+                        {(userProgress as any).averageScore.toFixed(1)}/5
                       </span>
                     </div>
                   )}
