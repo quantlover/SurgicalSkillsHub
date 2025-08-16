@@ -1,6 +1,6 @@
-# Firebase Setup Guide for SuturLearn
+# Firebase Setup Guide for SutureLearn
 
-This guide will help you set up Firebase Authentication and Firestore with maximum security for your SuturLearn application.
+This guide will help you set up Firebase Authentication and Firestore with maximum security for your SutureLearn application.
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@ This guide will help you set up Firebase Authentication and Firestore with maxim
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)
 2. Click "Create a project" or "Add project"
-3. Enter "SuturLearn" as project name
+3. Enter "SutureLearn" as project name
 4. Enable Google Analytics (optional)
 5. Click "Create project"
 
@@ -53,7 +53,7 @@ Copy the contents from `firestore.rules` file in your project and paste them int
 1. Go to Project Settings (gear icon in left sidebar)
 2. Scroll down to "Your apps" section
 3. Click on the web app icon (</>)
-4. Enter "SuturLearn Web" as app name
+4. Enter "SutureLearn Web" as app name
 5. Copy the configuration values:
    - `apiKey`
    - `projectId` 
@@ -144,4 +144,4 @@ When deploying to production:
 4. **Set up billing alerts** - Prevent unexpected charges
 5. **Use least privilege principle** - Give users minimum required permissions
 
-Your SuturLearn application now has enterprise-level security with Firebase!
+Your SutureLearn application now has enterprise-level security with Firebase!

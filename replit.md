@@ -2,7 +2,7 @@
 
 ## Overview
 
-SuturLearn is a comprehensive medical education platform designed to enhance suturing proficiency through interactive video learning, expert feedback, and progress tracking. The application serves four distinct user roles: learners, evaluators, researchers, and administrators, each with dedicated dashboards and functionalities.
+SutureLearn is a comprehensive medical education platform designed to enhance suturing proficiency through interactive video learning, expert feedback, and progress tracking. The application serves four distinct user roles: learners, evaluators, researchers, and administrators, each with dedicated dashboards and functionalities.
 
 ## System Architecture
 

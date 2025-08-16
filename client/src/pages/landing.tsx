@@ -29,7 +29,7 @@ export default function Landing() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Stethoscope className="text-spartan-green text-2xl mr-3" />
-              <h1 className="text-xl font-bold text-gray-900">SuturLearn</h1>
+              <h1 className="text-xl font-bold text-gray-900">SutureLearn</h1>
             </div>
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
@@ -198,7 +198,7 @@ export default function Landing() {
             Ready to Enhance Your Suturing Skills?
           </h3>
           <p className="text-xl text-gray-600 mb-8">
-            Join thousands of medical professionals improving their technique with SuturLearn
+            Join thousands of medical professionals improving their technique with SutureLearn
           </p>
           {isAuthenticated ? (
             <div className="space-y-4">
@@ -252,10 +252,10 @@ export default function Landing() {
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <Stethoscope className="text-spartan-green text-2xl mr-3" />
-              <span className="text-lg font-semibold text-gray-900">SuturLearn</span>
+              <span className="text-lg font-semibold text-gray-900">SutureLearn</span>
             </div>
             <p className="text-gray-600">
-              © 2025 SuturLearn. All rights reserved.
+              © 2025 SutureLearn. All rights reserved.
             </p>
           </div>
         </div>
