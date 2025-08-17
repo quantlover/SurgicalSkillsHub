@@ -362,16 +362,16 @@ export default function VideoAnalyticsDashboard() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8 space-y-4 lg:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">Video Analytics Dashboard</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">Video Analytics Dashboard</h1>
             <p className="text-gray-600 mt-2">
               Comprehensive video performance metrics and learning analytics
             </p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
             <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-full sm:w-32">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -381,12 +381,12 @@ export default function VideoAnalyticsDashboard() {
                 <SelectItem value="1y">Last year</SelectItem>
               </SelectContent>
             </Select>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={handleExportReport}>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <Button variant="outline" size="sm" onClick={handleExportReport} className="w-full sm:w-auto">
                 <Download className="h-4 w-4 mr-2" />
                 Export Report
               </Button>
-              <Button variant="outline" size="sm" onClick={handleExportIndividualRecords}>
+              <Button variant="outline" size="sm" onClick={handleExportIndividualRecords} className="w-full sm:w-auto">
                 <Download className="h-4 w-4 mr-2" />
                 Export Individual Records
               </Button>
